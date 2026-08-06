@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "firstname": "John",
-    "lastname": "Doe",
+    "firstname": "chlihi",
+    "lastname": "chlihi",
     "email": "john.doe@company.com",
     "department": "Engineering",
     "salary": 65000,
@@ -15,7 +15,6 @@
     "lastname": "Johnson",
     "email": "sarah.johnson@company.com",
     "department": "Human Resources",
-
     "salary": 58000,
     "hireDate": "2021-08-10",
     "isActive": true
@@ -26,7 +25,6 @@
     "lastname": "Brown",
     "email": "michael.brown@company.com",
     "department": "Finance",
-
     "salary": 54000,
     "hireDate": "2020-01-20",
     "isActive": true
@@ -37,7 +35,6 @@
     "lastname": "Wilson",
     "email": "emily.wilson@company.com",
     "department": "Marketing",
-
     "salary": 49000,
     "hireDate": "2023-05-12",
     "isActive": true
@@ -48,7 +45,6 @@
     "lastname": "Miller",
     "email": "david.miller@company.com",
     "department": "Engineering",
-
     "salary": 61000,
     "hireDate": "2022-11-01",
     "isActive": false
