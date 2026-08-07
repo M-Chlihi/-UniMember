@@ -19,5 +19,15 @@
     "salary": 54000,
     "hireDate": "2020-01-20",
     "isActive": true
+  },
+  {
+    "id": 3,
+    "firstname": "hugo",
+    "lastname": "locas",
+    "email": "locas.hugo@company.com",
+    "department": "Finance",
+    "salary": 54000,
+    "hireDate": "2020-01-20",
+    "isActive": true
   }
 ]

@@ -1,22 +1,16 @@
 [
   {
-    "username": "yakin",
-    "password": "$2b$10$17U1JAzaNKYwfp9V8nf6OOCfYxPefrycawNNA/ImCkm7Lr98gvHW6"
+    "username": "ENSAuser1",
+    "password": "$2b$10$jbFCshLpua6e2gX3.fyvwOQ66o2NFcYjeetcX/yPiyzQFOZcj2Diu"
   },
   {
-    "username": "MOHAMED",
-    "password": "$2b$10$yShVTpiR6pTkdTtFrfZIXuJ.ftcJl70WFPJaGu7Lm2mtV3w3ebvse"
+    "username": "ENSAuser1",
+    "password": "$2b$10$jbFCshLpua6e2gX3.fyvwOQ66o2NFcYjeetcX/yPiyzQFOZcj2Diu",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkVOU0F1c2VyMSIsImlhdCI6MTc4NjEyMjI1MCwiZXhwIjoxNzg2MjA4NjUwfQ.3dOq5wMKSA-nPV8QQv318oEHluSOV1aUT1myg-ORXQU"
   },
   {
-    "username": "hamza",
-    "password": "$2b$10$zZkeYmbYKw6yv9ZXQLABOOfJG548wPWzLf9nqMxPoDQSw5XiLj97K"
-  },
-  {
-    "username": "ADAM",
-    "password": "$2b$10$/qDpurvLrV0v9pQy7l6OGey2xbDb/S7w6Ubj.ALCRihaJW9AOlm8y"
-  },
-  {
-    "username": "mohamed Chlihi",
-    "password": "$2b$10$/qJ.MpC2fjPu2nJ6KbvGBOhf8LTWkqpDiX5qeJl/bgQQlxH61l49."
+    "username": "ENSAuser1",
+    "password": "$2b$10$jbFCshLpua6e2gX3.fyvwOQ66o2NFcYjeetcX/yPiyzQFOZcj2Diu",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkVOU0F1c2VyMSIsImlhdCI6MTc4NjEyMjMxOCwiZXhwIjoxNzg2MjA4NzE4fQ.oRzobOrQHaEkY6-JeqQQsWIR3wxmURWWelKa7OnlAQ4"
   }
 ]

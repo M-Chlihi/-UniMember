@@ -1,5 +1,5 @@
 const saveEmployees = require("../utils/dataFormatter");
-
+const jwt = require("jsonwebtoken");
 const userDB = {
   users: require("../data/usersDB"),
   setUsers: function (data) {
@@ -9,6 +9,7 @@ const userDB = {
 const fsPromises = require("fs/promises");
 const path = require("path");
 const bycript = require("bcrypt");
+require("dotenv").config();
 
 console.log(userDB.users.length);
 
@@ -39,6 +40,11 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({
+      message: "username and passwrod are required",
+    });
+  }
   const foundUser = userDB.users.find((e) => e.username === req.body.username);
 
   if (!foundUser) return res.sendStatus(401);
@@ -48,8 +54,39 @@ const login = async (req, res) => {
     return res.sendStatus(401);
   }
 
-  res.json({
-    message: "Login successful",
+  // create JWTs
+  const accessToken = jwt.sign(
+    {
+      username: foundUser.username,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: "15m",
+    },
+  );
+  const refreshToken = jwt.sign(
+    {
+      username: foundUser.username,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: "1d",
+    },
+  );
+
+  const otherUsers = userDB.users.filter((p) => p.username !== foundUser);
+  const currentUser = { ...foundUser, refreshToken };
+  userDB.setUsers([...otherUsers, currentUser]);
+  saveEmployees(userDB.users, "usersDB.json");
+
+  // create JWTs
+  res.cookie("jwt", refreshToken, {
+    httpOnly: true,
+    maxAgge: 24 * 60 * 60 * 1000,
   });
+  res.json({ accessToken });
+  // res.json({
+  //   message: `Login successful, user ${user} is logged in ! `,
+  // });
 };
 module.exports = { register, login };
