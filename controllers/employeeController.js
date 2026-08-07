@@ -5,7 +5,7 @@ const data = {
     this.employees = data;
   },
 };
-console.log(data.employees.length);
+// console.log(data.employees.length);
 const getAllEmplyees = (req, res) => {
   res.json(data.employees);
 };
@@ -35,7 +35,7 @@ const createNewEmplyees = (req, res) => {
       .json({ message: "all employee fields  are required" });
   }
   data.setEmployees([...data.employees, newEmpolyee]);
-  saveEmployees(data.employees);
+  saveEmployees(data.employees, "employees.json");
   res.status(201).json(data.employees);
 };
 ///:::::::::::::vvccc
@@ -66,7 +66,7 @@ const updateEmplyees = (req, res) => {
   data.setEmployees(
     unSortedArray.sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0)),
   );
-  saveEmployees(data.employees);
+  saveEmployees(data.employees, "employees.json");
 
   res.json(data.employees);
 };
@@ -83,7 +83,7 @@ const deleteEmplyees = (req, res) => {
     (e) => e.id !== parseInt(req.body.id),
   );
   data.setEmployees([...filteredArray]);
-  saveEmployees(data.employees);
+  saveEmployees(data.employees, "employees.json");
 
   res.json(data.employees);
 };
