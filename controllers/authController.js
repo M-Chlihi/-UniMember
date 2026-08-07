@@ -19,6 +19,8 @@ const register = async (req, res) => {
       message: "username and passwrod are required",
     });
   }
+  const duplicate = userDB.users.find((e) => e.username === username);
+  if (duplicate) return res.sendStatus(409); // conflict
 
   const hashePwd = await bycript.hash(password, 10);
   const newUser = {
