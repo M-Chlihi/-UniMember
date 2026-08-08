@@ -25,6 +25,7 @@ app.use("/refresh", require("./routes/api/refresh"));
 app.use("/logout", require("./routes/api/logout"));
 
 app.use(verifyJWT);
+app.use(verifyJWT);
 app.use("/employees", require("./routes/api/employees"));
 
 app.use((req, res) => {

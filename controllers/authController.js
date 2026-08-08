@@ -26,6 +26,7 @@ const register = async (req, res) => {
   const hashePwd = await bycript.hash(password, 10);
   const newUser = {
     username,
+    roles: { user: 2001 },
     password: hashePwd,
   };
 
@@ -53,15 +54,18 @@ const login = async (req, res) => {
   if (!match) {
     return res.sendStatus(401);
   }
+  // add roles
+  const roles = Object.values(foundUser.roles);
 
+  // add roles
   // create JWTs
   const accessToken = jwt.sign(
     {
-      username: foundUser.username,
+      UserInfo: { username: foundUser.username, roles: roles },
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "30s",
+      expiresIn: "60s",
     },
   );
   const refreshToken = jwt.sign(
