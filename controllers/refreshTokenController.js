@@ -1,5 +1,5 @@
-const saveEmployees = require("../utils/dataFormatter");
 const jwt = require("jsonwebtoken");
+const User = require("../data/User");
 const userDB = {
   users: require("../data/usersDB"),
   setUsers: function (data) {
@@ -9,7 +9,7 @@ const userDB = {
 const fsPromises = require("fs/promises");
 require("dotenv").config();
 
-const hundleRefreshToken = (req, res) => {
+const hundleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
   console.log("Cookies:", req.cookies);
 
@@ -19,7 +19,9 @@ const hundleRefreshToken = (req, res) => {
   console.log(cookies.jwt);
   const refreshToken = cookies.jwt;
 
-  const foundUser = userDB.users.find((e) => e.refreshToken === refreshToken);
+  const foundUser = await User.findOne({
+    refreshToken,
+  }).exec();
 
   if (!foundUser) return res.sendStatus(403);
   // evaluate JWT
@@ -39,9 +41,6 @@ const hundleRefreshToken = (req, res) => {
     );
     res.json({ accessToken });
   });
-  // res.json({
-  //   message: `Login successful, user ${user} is logged in ! `,
-  // });
 };
 
 module.exports = { hundleRefreshToken };

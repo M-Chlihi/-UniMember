@@ -1,17 +1,15 @@
-const saveEmployees = require("../utils/dataFormatter");
+// const saveEmployees = require("../utils/dataFormatter");
+const User = require("../data/User");
 const jwt = require("jsonwebtoken");
-const userDB = {
-  users: require("../data/usersDB"),
-  setUsers: function (data) {
-    this.users = data;
-  },
-};
-const fsPromises = require("fs/promises");
-const path = require("path");
+// const userDB = {
+//   users: require("../data/usersDB"),
+//   setUsers: function (data) {
+//     this.users = data;
+//   },
+// };
+
 const bycript = require("bcrypt");
 require("dotenv").config();
-
-console.log(userDB.users.length);
 
 const register = async (req, res) => {
   const { username, password } = req.body;
@@ -20,23 +18,30 @@ const register = async (req, res) => {
       message: "username and passwrod are required",
     });
   }
-  const duplicate = userDB.users.find((e) => e.username === username);
-  if (duplicate) return res.sendStatus(409); // conflict
 
-  const hashePwd = await bycript.hash(password, 10);
-  const newUser = {
-    username,
-    roles: { user: 2001 },
-    password: hashePwd,
-  };
+  try {
+    // const duplicate = userDB.users.find((e) => e.username === username);
+    const duplicate = await User.findOne({ username: username }).exec();
+    if (duplicate) return res.sendStatus(409); // conflict
 
-  // save newUser in thhe DB :
-  userDB.setUsers([...userDB.users, newUser]);
-  saveEmployees(userDB.users, "usersDB.json");
+    const hashePwd = await bycript.hash(password, 10);
+    // create and store newUser
+    const result = await User.create({
+      username: username,
+      password: hashePwd,
+    });
+    console.log(result);
 
-  res.status(201).json({
-    message: "user registred successfully",
-  });
+    res.status(201).json({
+      message: "user registred successfully",
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
 };
 
 const login = async (req, res) => {
@@ -46,55 +51,63 @@ const login = async (req, res) => {
       message: "username and passwrod are required",
     });
   }
-  const foundUser = userDB.users.find((e) => e.username === req.body.username);
 
-  if (!foundUser) return res.sendStatus(401);
-  const match = await bycript.compare(password, foundUser.password);
+  try {
+    const foundUser = await User.findOne({ username: username }).exec();
 
-  if (!match) {
-    return res.sendStatus(401);
+    if (!foundUser) return res.sendStatus(401);
+    const match = await bycript.compare(password, foundUser.password);
+
+    if (!match) {
+      return res.sendStatus(401);
+    }
+    // add roles
+    const roles = Object.values(foundUser.roles);
+
+    // add roles
+    // create JWTs
+    const accessToken = jwt.sign(
+      {
+        UserInfo: { username: foundUser.username, roles: roles },
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: "60s",
+      },
+    );
+    const refreshToken = jwt.sign(
+      {
+        username: foundUser.username,
+      },
+      process.env.REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: "1d",
+      },
+    );
+
+    // Store refresh token in MongoDB
+    foundUser.refreshToken = refreshToken;
+
+    await foundUser.save();
+
+    // const currentUser = { ...foundUser, refreshToken };
+    // userDB.setUsers([...otherUsers, currentUser]);
+    // saveEmployees(userDB.users, "usersDB.json");
+
+    // create JWTs
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    res.json({ accessToken });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      message: "Internal server error",
+    });
   }
-  // add roles
-  const roles = Object.values(foundUser.roles);
-
-  // add roles
-  // create JWTs
-  const accessToken = jwt.sign(
-    {
-      UserInfo: { username: foundUser.username, roles: roles },
-    },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: "60s",
-    },
-  );
-  const refreshToken = jwt.sign(
-    {
-      username: foundUser.username,
-    },
-    process.env.REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: "1d",
-    },
-  );
-
-  const otherUsers = userDB.users.filter(
-    (p) => p.username !== foundUser.username,
-  );
-  const currentUser = { ...foundUser, refreshToken };
-  userDB.setUsers([...otherUsers, currentUser]);
-  saveEmployees(userDB.users, "usersDB.json");
-
-  // create JWTs
-  res.cookie("jwt", refreshToken, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
-    maxAge: 24 * 60 * 60 * 1000,
-  });
-  res.json({ accessToken });
-  // res.json({
-  //   message: `Login successful, user ${user} is logged in ! `,
-  // });
 };
 module.exports = { register, login };
