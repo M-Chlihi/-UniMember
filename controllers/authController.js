@@ -74,7 +74,9 @@ const login = async (req, res) => {
     },
   );
 
-  const otherUsers = userDB.users.filter((p) => p.username !== foundUser);
+  const otherUsers = userDB.users.filter(
+    (p) => p.username !== foundUser.username,
+  );
   const currentUser = { ...foundUser, refreshToken };
   userDB.setUsers([...otherUsers, currentUser]);
   saveEmployees(userDB.users, "usersDB.json");
@@ -82,7 +84,7 @@ const login = async (req, res) => {
   // create JWTs
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
-    maxAgge: 24 * 60 * 60 * 1000,
+    maxAge: 24 * 60 * 60 * 1000,
   });
   res.json({ accessToken });
   // res.json({

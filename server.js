@@ -15,11 +15,12 @@ app.use(express.json());
 app.use(cors(corsOptions));
 
 // middlware for cookies
-app.use(cookieParser);
+app.use(cookieParser());
 
 app.use("/regUsers", require("./routes/api/signUpApi"));
 app.use("/login", require("./routes/api/login"));
 app.use("/refresh", require("./routes/api/refresh"));
+app.use("/logout", require("./routes/api/logout"));
 
 app.use(verifyJWT);
 app.use("/employees", require("./routes/api/employees"));

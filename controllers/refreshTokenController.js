@@ -7,8 +7,6 @@ const userDB = {
   },
 };
 const fsPromises = require("fs/promises");
-const path = require("path");
-const bycript = require("bcrypt");
 require("dotenv").config();
 
 const hundleRefreshToken = (req, res) => {
@@ -24,7 +22,7 @@ const hundleRefreshToken = (req, res) => {
 
   if (!foundUser) return res.sendStatus(403);
   // evaluate JWT
-  jwt.verify(refreshToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
     if (err || foundUser.username !== decoded.username)
       return res.sendStatus(403);
 
