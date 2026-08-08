@@ -32,17 +32,44 @@ This project demonstrates backend fundamentals including routing, controllers, m
 ## Project Structure
 
 ```
-employee-rest-api/
+employee-api/
 │
 ├── config/
+│   ├── corsOptions.js
+│   ├── dbConn.js
+│   └── rolesList.js
+│
 ├── controllers/
-├── data/
+│   ├── authController.js
+│   └── employeeController.js
+│
 ├── middleware/
+│   ├── credentials.js
+│   ├── errorHandler.js
+│   ├── logger.js
+│   ├── logEvent.js
+│   ├── verifyJWT.js
+│   └── verifyRoles.js
+│
+├── models/
+│   ├── Employee.js
+│   └── User.js
+│
 ├── routes/
 │   └── api/
-├── utils/
-├── server.js
-└── package.json
+│       ├── employees.js
+│       ├── login.js
+│       ├── logout.js
+│       ├── refresh.js
+│       └── register.js
+│
+├── logs/
+│
+├── .env
+├── .env.example
+├── .gitignore
+├── package.json
+└── server.js
 ```
 
 ---
@@ -97,4 +124,3 @@ PORT=3500
 ## Author
 
 **MAHY**
-

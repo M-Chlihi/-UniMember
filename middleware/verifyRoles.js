@@ -9,7 +9,7 @@ const verifyRoles = (...allowedRoles) => {
       .map((role) => rolesArrays.includes(role))
       .find((val) => val === true);
     if (!result) {
-      return res.sendStatus(401);
+      return res.sendStatus(403);
     }
     next();
   };

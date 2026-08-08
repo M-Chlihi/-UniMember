@@ -6,6 +6,8 @@ const UserSchema = new Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
+    trim: true,
   },
   roles: {
     User: {
@@ -18,6 +20,7 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: true,
+    select: false,
   },
   refreshToken: String,
 });

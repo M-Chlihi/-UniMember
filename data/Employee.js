@@ -12,23 +12,23 @@ const employeeSchema = new Schema({
   },
   email: {
     type: String,
-    required: true,
+    required: false,
   },
   department: {
     type: String,
-    required: true,
+    required: false,
   },
   salary: {
     type: Number,
-    required: true,
+    required: false,
   },
   hireDate: {
     type: Date,
-    required: true,
+    required: false,
   },
   isActive: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 });
 module.exports = mongoose.model("Employee", employeeSchema);

@@ -1,13 +1,5 @@
 const jwt = require("jsonwebtoken");
 const User = require("../data/User");
-const userDB = {
-  users: require("../data/usersDB"),
-  setUsers: function (data) {
-    this.users = data;
-  },
-};
-const fsPromises = require("fs/promises");
-require("dotenv").config();
 
 const hundleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
@@ -36,7 +28,7 @@ const hundleRefreshToken = async (req, res) => {
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "60s",
+        expiresIn: "120s",
       },
     );
     res.json({ accessToken });

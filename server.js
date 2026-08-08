@@ -10,7 +10,6 @@ const verifyJWT = require("./middleware/verifyJWT");
 const cookieParser = require("cookie-parser");
 const credentialas = require("./middleware/Credentials");
 const corsOptions = require("./config/corsOptions");
-const mongoose = require("mongoose");
 const connectDB = require("./config/dbConn");
 const PORT = process.env.PORT || 3500;
 // connectDB();
@@ -29,7 +28,6 @@ app.use("/login", require("./routes/api/login"));
 app.use("/refresh", require("./routes/api/refresh"));
 app.use("/logout", require("./routes/api/logout"));
 
-app.use(verifyJWT);
 app.use(verifyJWT);
 app.use("/employees", require("./routes/api/employees"));
 
