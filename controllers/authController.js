@@ -84,6 +84,8 @@ const login = async (req, res) => {
   // create JWTs
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
+    sameSite: "lax",
+    secure: false,
     maxAge: 24 * 60 * 60 * 1000,
   });
   res.json({ accessToken });

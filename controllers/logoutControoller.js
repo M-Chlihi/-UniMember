@@ -30,9 +30,9 @@ const hundleLogoutToken = (req, res) => {
   );
   const currentUser = { ...foundUser, refreshToken: "" };
   userDB.setUsers([...otherUsers, currentUser]);
-    saveEmployees(userDB.users, "usersDB.json");
+  saveEmployees(userDB.users, "usersDB.json");
 
-    res.clearCookie('jwt', {httpOnly: true}) // secure : true (just in production )
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: "true" }); // secure : true (just in production )
 };
 
 module.exports = { hundleLogoutToken };

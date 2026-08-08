@@ -11,6 +11,7 @@ require("dotenv").config();
 
 const hundleRefreshToken = (req, res) => {
   const cookies = req.cookies;
+  console.log("Cookies:", req.cookies);
 
   if (!cookies?.jwt) {
     return res.sendStatus(401);

@@ -6,12 +6,14 @@ const { logger } = require("./middleware/logger");
 const { errorHandler } = require("./middleware/errorHandler");
 const verifyJWT = require("./middleware/verifyJWT");
 const cookieParser = require("cookie-parser");
-
+const credentialas = require("./middleware/Credentials");
 const corsOptions = require("./config/corsOptions");
 const PORT = process.env.PORT || 3500;
 app.use(logger);
 app.use(express.urlencoded({ extended: false })); // built-in middleware to handle urlencoded data
 app.use(express.json());
+app.use(credentialas);
+
 app.use(cors(corsOptions));
 
 // middlware for cookies
