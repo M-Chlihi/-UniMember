@@ -2,13 +2,18 @@ const express = require("express");
 const path = require("path");
 const app = express();
 const cors = require("cors");
+require("dotenv").config();
+
 const { logger } = require("./middleware/logger");
 const { errorHandler } = require("./middleware/errorHandler");
 const verifyJWT = require("./middleware/verifyJWT");
 const cookieParser = require("cookie-parser");
 const credentialas = require("./middleware/Credentials");
 const corsOptions = require("./config/corsOptions");
+const mongoose = require("mongoose");
+const connectDB = require("./config/dbConn");
 const PORT = process.env.PORT || 3500;
+// connectDB();
 app.use(logger);
 app.use(express.urlencoded({ extended: false })); // built-in middleware to handle urlencoded data
 app.use(express.json());
@@ -33,4 +38,13 @@ app.use((req, res) => {
 });
 
 app.use(errorHandler);
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const startServer = async () => {
+  await connectDB();
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
+
+startServer();
