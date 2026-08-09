@@ -2,11 +2,38 @@ const Employee = require("../data/Employee");
 
 // console.log(data.employees.length);
 const getAllEmplyees = async (req, res) => {
-  const employees = await Employee.find();
+  let employees = await Employee.find();
+  const { department, isActive, sort, page = "1", limit = "10" } = req.query;
+  console.log(typeof req.query.isActive);
   if (employees.length === 0) {
     return res.status(204).json({ message: "no employees found" });
   }
-  res.json(employees);
+  if (department) {
+    employees = employees.filter(
+      (employee) => employee.department === department,
+    );
+  }
+
+  if (isActive) {
+    employees = employees.filter(
+      (employee) => employee.isActive === (isActive === "true"),
+    );
+  }
+  if (sort === "salary") {
+    employees.sort((a, b) => a.salary - b.salary);
+  }
+  if (sort === "-salary") {
+    employees.sort((a, b) => b.salary - a.salary);
+  }
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const paginatedEmployees = employees.slice(skip, skip + limitNumber);
+
+  res.json(paginatedEmployees);
 };
 ///:::::::::::::
 const createNewEmplyees = async (req, res) => {
@@ -20,6 +47,9 @@ const createNewEmplyees = async (req, res) => {
     const result = await Employee.create({
       firstname: req.body.firstname,
       lastname: req.body.lastname,
+      department: req.body.department,
+      salary: req.body.salary,
+      isActive: req.body.isActive,
     });
 
     res.status(201).json(result);
@@ -44,11 +74,9 @@ const updateEmplyees = async (req, res) => {
   }
   if (req.body?.firstname) employee.firstname = req.body.firstname;
   if (req.body?.lastname) employee.lastname = req.body.lastname;
-  if (req.body?.email) employee.email = req.body.email;
   if (req.body?.department) employee.department = req.body.department;
   if (req.body?.salary) employee.salary = req.body.salary;
-  if (req.body?.hireDate) employee.hireDate = req.body.hireDate;
-  if (req.body?.isActive !== undefined) employee.isActive = req.body.isActive;
+  if (req.body?.isActive) employee.isActive = req.body.isActive;
 
   const result = await employee.save();
 

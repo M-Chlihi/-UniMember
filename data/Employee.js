@@ -16,11 +16,11 @@ const employeeSchema = new Schema({
   },
   department: {
     type: String,
-    required: false,
+    required: true,
   },
   salary: {
     type: Number,
-    required: false,
+    required: true,
   },
   hireDate: {
     type: Date,
@@ -28,7 +28,7 @@ const employeeSchema = new Schema({
   },
   isActive: {
     type: Boolean,
-    default: false,
+    required: true,
   },
 });
 module.exports = mongoose.model("Employee", employeeSchema);
