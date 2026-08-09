@@ -1,28 +1,13 @@
-// const saveEmployees = require("../utils/dataFormatter");
 const User = require("../data/User");
 const jwt = require("jsonwebtoken");
-// const userDB = {
-//   users: require("../data/usersDB"),
-//   setUsers: function (data) {
-//     this.users = data;
-//   },
-// }; 400
 
 const bycript = require("bcrypt");
 require("dotenv").config();
 
 const register = async (req, res) => {
-  console.log("BODY:", req.body);
-
   const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({
-      message: "username and passwrod are required",
-    });
-  }
 
   try {
-    // const duplicate = userDB.users.find((e) => e.username === username);
     const duplicate = await User.findOne({ username: username }).exec();
     if (duplicate) return res.sendStatus(409); // conflict
 
@@ -68,7 +53,6 @@ const login = async (req, res) => {
     // add roles
     const roles = Object.values(foundUser.roles);
 
-    // add roles
     // create JWTs
     const accessToken = jwt.sign(
       {
@@ -94,15 +78,11 @@ const login = async (req, res) => {
 
     await foundUser.save();
 
-    // const currentUser = { ...foundUser, refreshToken };
-    // userDB.setUsers([...otherUsers, currentUser]);
-    // saveEmployees(userDB.users, "usersDB.json");
-
     // create JWTs
     res.cookie("jwt", refreshToken, {
       httpOnly: true,
       sameSite: "lax",
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000,
     });
     res.json({ accessToken });
