@@ -6,12 +6,14 @@ const jwt = require("jsonwebtoken");
 //   setUsers: function (data) {
 //     this.users = data;
 //   },
-// };
+// }; 400
 
 const bycript = require("bcrypt");
 require("dotenv").config();
 
 const register = async (req, res) => {
+  console.log("BODY:", req.body);
+
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({
@@ -53,8 +55,10 @@ const login = async (req, res) => {
   }
 
   try {
-    const foundUser = await User.findOne({ username: username }).exec();
-
+    const foundUser = await User.findOne({ username: username })
+      .select("+password")
+      .exec();
+    console.log("FOUND USER:", foundUser);
     if (!foundUser) return res.sendStatus(401);
     const match = await bycript.compare(password, foundUser.password);
 
