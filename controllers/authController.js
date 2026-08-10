@@ -43,7 +43,6 @@ const login = async (req, res) => {
     const foundUser = await User.findOne({ username: username })
       .select("+password")
       .exec();
-    console.log("FOUND USER:", foundUser);
     if (!foundUser) return res.sendStatus(401);
     const match = await bycript.compare(password, foundUser.password);
 
