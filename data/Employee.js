@@ -31,4 +31,11 @@ const employeeSchema = new Schema({
     required: true,
   },
 });
+employeeSchema.index({
+  department: 1,
+});
+employeeSchema.index({
+  department: 1,
+  salary: -1,
+});
 module.exports = mongoose.model("Employee", employeeSchema);

@@ -2,38 +2,84 @@ const Employee = require("../data/Employee");
 
 // console.log(data.employees.length);
 const getAllEmplyees = async (req, res) => {
-  let employees = await Employee.find();
+  // let employees = await Employee.find({ department: "IT" });
+  // const { department, isActive, sort, page = "1", limit = "10" } = req.query;
+  // console.log(typeof req.query.isActive);
+  // if (employees.length === 0) {
+  //   return res.status(204).json({ message: "no employees found" });
+  // }
+  // if (department) {
+  //   employees = employees.filter(
+  //     (employee) => employee.department === department,
+  //   );
+  // }
+
+  // if (isActive) {
+  //   employees = employees.filter(
+  //     (employee) => employee.isActive === (isActive === "true"),
+  //   );
+  // }
+  // if (sort === "salary") {
+  //   employees.sort((a, b) => a.salary - b.salary);
+  // }
+  // if (sort === "-salary") {
+  //   employees.sort((a, b) => b.salary - a.salary);
+  // }
+
+  // const pageNumber = Number(page);
+  // const limitNumber = Number(limit);
+
+  // const skip = (pageNumber - 1) * limitNumber;
+
+  // const paginatedEmployees = employees.slice(skip, skip + limitNumber);
+
+  // res.json(paginatedEmployees);
   const { department, isActive, sort, page = "1", limit = "10" } = req.query;
-  console.log(typeof req.query.isActive);
-  if (employees.length === 0) {
-    return res.status(204).json({ message: "no employees found" });
-  }
+
+  // Build MongoDB query dynamically
+  const query = {};
+
   if (department) {
-    employees = employees.filter(
-      (employee) => employee.department === department,
-    );
+    query.department = department;
   }
 
-  if (isActive) {
-    employees = employees.filter(
-      (employee) => employee.isActive === (isActive === "true"),
-    );
-  }
-  if (sort === "salary") {
-    employees.sort((a, b) => a.salary - b.salary);
-  }
-  if (sort === "-salary") {
-    employees.sort((a, b) => b.salary - a.salary);
+  if (isActive !== undefined) {
+    query.isActive = isActive === "true";
   }
 
+  // Pagination
   const pageNumber = Number(page);
   const limitNumber = Number(limit);
-
   const skip = (pageNumber - 1) * limitNumber;
 
-  const paginatedEmployees = employees.slice(skip, skip + limitNumber);
+  // Sorting
+  let sortOption = {};
 
-  res.json(paginatedEmployees);
+  if (sort === "salary") {
+    sortOption.salary = 1;
+  }
+
+  if (sort === "-salary") {
+    sortOption.salary = -1;
+  }
+
+  const employees = await Employee.find(query)
+    .sort(sortOption)
+    .skip(skip)
+    .limit(limitNumber);
+
+  const results = await Employee.find({ department: "IT" }).explain(
+    "executionStats",
+  );
+  console.log(results);
+
+  if (employees.length === 0) {
+    return res.status(404).json({
+      message: "No employees found",
+    });
+  }
+
+  res.json(employees);
 };
 ///:::::::::::::
 const createNewEmplyees = async (req, res) => {
