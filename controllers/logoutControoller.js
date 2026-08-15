@@ -1,14 +1,6 @@
 // const saveEmployees = require("../utils/dataFormatter");
 const jwt = require("jsonwebtoken");
-const User = require("../data/User");
-// const userDB = {
-//   users: require("../data/usersDB"),
-//   setUsers: function (data) {
-//     this.users = data;
-//   },
-// };
-// const fsPromises = require("fs/promises");
-// const path = require("path");
+const User = require("../models/User");
 
 const hundleLogoutToken = async (req, res) => {
   const cookies = req.cookies;

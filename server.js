@@ -12,7 +12,6 @@ const credentialas = require("./middleware/Credentials");
 const corsOptions = require("./config/corsOptions");
 const connectDB = require("./config/dbConn");
 const PORT = process.env.PORT || 3500;
-// connectDB();
 app.use(logger);
 app.use(express.urlencoded({ extended: false })); // built-in middleware to handle urlencoded data
 app.use(express.json());
@@ -29,14 +28,12 @@ app.use("/refresh", require("./routes/api/refresh"));
 app.use("/users", require("./routes/api/users"));
 app.use("/logout", require("./routes/api/logout"));
 app.use(verifyJWT);
-app.use("/employees", require("./routes/api/employees"));
 
 app.use((req, res) => {
   res.status(404).send(path.join(__dirname, "views", "404.html"));
 });
 
 app.use(errorHandler);
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 const startServer = async () => {
   await connectDB();
 

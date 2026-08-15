@@ -2,9 +2,13 @@ const Joi = require("joi");
 const ROLES_LIST = require("../config/roles_list");
 
 const registerSchema = Joi.object({
-  username: Joi.string().trim().min(3).required(),
-  password: Joi.string().min(8).max(124).required(),
+  username: Joi.string().trim().min(3).max(30).required(),
+
+  email: Joi.string().trim().lowercase().email().required(),
+
+  password: Joi.string().min(8).max(128).required(),
 });
+
 const loginSchema = Joi.object({
   username: Joi.string().trim().min(3).required(),
   password: Joi.string().min(8).required(),

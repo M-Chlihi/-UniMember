@@ -1,23 +1,29 @@
-const User = require("../data/User");
+const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
 const bycript = require("bcrypt");
 require("dotenv").config();
 
 const register = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
 
   try {
-    const duplicate = await User.findOne({ username: username }).exec();
-    if (duplicate) return res.sendStatus(409); // conflict
+    const duplicate = await User.findOne({
+      $or: [{ username }, { email }],
+    }).exec();
+    if (duplicate) {
+      return res.sendStatus(409).json({
+        message: "Username or email already exists",
+      });
+    } // conflict
 
     const hashePwd = await bycript.hash(password, 10);
     // create and store newUser
     const result = await User.create({
-      username: username,
+      username,
+      email,
       password: hashePwd,
     });
-    console.log(result);
 
     res.status(201).json({
       message: "user registred successfully",

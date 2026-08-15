@@ -14,7 +14,7 @@ const validate = require("../../middleware/validation");
 const { updateRolesSchema } = require("../../validation/authSchema");
 
 const ROLES_LIST = require("../../config/roles_list");
-router.route("/").get(GETUser);
+router.route("/").get(verifyJWT, GETUser);
 router.patch(
   "/:id/roles",
   verifyJWT,
