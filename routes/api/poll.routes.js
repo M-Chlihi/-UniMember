@@ -6,8 +6,12 @@ const verifyJWT = require("../../middleware/verifyJWT");
 const verifyRoles = require("../../middleware/verifyRoles");
 const validate = require("../../middleware/validation");
 const { createPollSchema } = require("../../validation/pollSchema");
+const {
+  createPollOptionSchema,
+} = require("../../validation/pollOptionsSchema");
 const { valid } = require("joi");
 const { createPoll } = require("../../controllers/pollController");
+const { createPollOption } = require("../../controllers/pollOpController");
 
 router.post(
   "/",
@@ -17,4 +21,11 @@ router.post(
   createPoll,
 );
 
+router.post(
+  "/:pollId/options",
+  verifyJWT,
+  verifyRoles(ROLES.Admin, ROLES.Editor),
+  validate(createPollOptionSchema),
+  createPollOption,
+);
 module.exports = router;
