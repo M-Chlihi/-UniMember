@@ -27,7 +27,8 @@ app.use("/login", require("./routes/api/login"));
 app.use("/refresh", require("./routes/api/refresh"));
 app.use("/users", require("./routes/api/users"));
 app.use("/logout", require("./routes/api/logout"));
-app.use(verifyJWT);
+// app.use(verifyJWT);
+app.use("/api/v1/polls", require("./routes/api/poll.routes"));
 
 app.use((req, res) => {
   res.status(404).send(path.join(__dirname, "views", "404.html"));

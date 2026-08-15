@@ -61,7 +61,11 @@ const login = async (req, res) => {
     // create JWTs
     const accessToken = jwt.sign(
       {
-        UserInfo: { username: foundUser.username, roles: roles },
+        UserInfo: {
+          id: foundUser._id,
+          username: foundUser.username,
+          roles: roles,
+        },
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
