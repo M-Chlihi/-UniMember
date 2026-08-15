@@ -5,5 +5,7 @@ const createPollOptionSchema = Joi.object({
 
   description: Joi.string().trim().max(500).allow("", null),
 });
-
-module.exports = { createPollOptionSchema };
+const createVoteSchema = Joi.object({
+  optionId: Joi.string().hex().length(24).required(),
+});
+module.exports = { createPollOptionSchema, createVoteSchema };
