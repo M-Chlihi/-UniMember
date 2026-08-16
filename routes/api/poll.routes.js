@@ -18,7 +18,11 @@ const {
   getActivePoll,
 } = require("../../controllers/pollController");
 const { createPollOption } = require("../../controllers/pollOpController");
-const { castVote, getResults } = require("../../controllers/voteController");
+const {
+  castVote,
+  getResults,
+  getMyVote,
+} = require("../../controllers/voteController");
 
 router.post(
   "/",
@@ -58,7 +62,8 @@ router.post(
   validate(createVoteSchema),
   castVote,
 );
-module.exports = router;
+
+router.get("/:pollId/my-vote", verifyJWT, getMyVote);
 
 router.get(
   "/:pollId/results",
@@ -79,3 +84,5 @@ router.post(
   verifyRoles(ROLES.Admin, ROLES.Editor),
   closePollController,
 );
+
+module.exports = router;

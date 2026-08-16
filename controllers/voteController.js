@@ -131,7 +131,40 @@ const getResults = async (req, res) => {
   }
 };
 
+const getMyVote = async (req, res, next) => {
+  const { pollId } = req.params;
+
+  try {
+    const vote = await Vote.findOne({
+      pollId,
+      userId: req.user,
+    })
+      .populate("optionId", "title")
+      .select("optionId createdAt")
+      .lean();
+
+    if (!vote) {
+      return res.status(200).json({
+        pollId,
+        vote: null,
+      });
+    }
+
+    return res.status(200).json({
+      pollId,
+      vote: {
+        optionId: vote.optionId._id,
+        optionTitle: vote.optionId.title,
+        votedAt: vote.createdAt,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   castVote,
   getResults,
+  getMyVote,
 };
