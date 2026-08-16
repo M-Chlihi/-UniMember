@@ -1,9 +1,9 @@
 const Poll = require("../models/Poll");
 const PollOption = require("../models/PollOption");
-
+const { notifyPollClosed } = require("./notification.service");
+const { getPollResults } = require("./vote.service");
 const publishPoll = async (pollId) => {
   const poll = await Poll.findById(pollId).exec();
-
   if (!poll) {
     const error = new Error("Poll not found");
     error.status = 404;
@@ -90,19 +90,37 @@ const transitionScheduledPolls = async () => {
 };
 
 const transitionOpenPolls = async () => {
+  // when we want scall we'll redesign this around jobs/events and bulk operations.
   const now = new Date();
 
-  await Poll.updateMany(
-    {
-      status: "OPEN",
-      endsAt: { $lte: now },
-    },
-    {
-      $set: {
-        status: "CLOSED",
-      },
-    },
-  );
+  // await Poll.updateMany(
+  //   {
+  //     status: "OPEN",
+  //     endsAt: { $lte: now },
+  //   },
+  //   {
+  //     $set: {
+  //       status: "CLOSED",
+  //     },
+  //   },
+  // );
+  const pollsToClose = await Poll.find({
+    status: "OPEN",
+    endsAt: { $lte: now },
+  }).exec();
+
+  for (const poll of pollsToClose) {
+    poll.status = "CLOSED";
+    await poll.save();
+
+    // notification later
+    const results = await getPollResults(poll._id);
+
+    await notifyPollClosed({
+      poll,
+      results,
+    });
+  }
 };
 
 module.exports = {
