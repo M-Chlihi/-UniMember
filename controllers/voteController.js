@@ -8,8 +8,11 @@ const { getPollResults } = require("../services/vote.service");
 // Is the poll OPEN?
 // done
 // Does the option exist?
+// done
 // Does the option belong to this poll?
+// done
 // Has this user already voted in this poll?
+// done
 // Create vote
 const castVote = async (req, res) => {
   const { pollId } = req.params;
@@ -28,6 +31,13 @@ const castVote = async (req, res) => {
 
     //and poll must be OPEN
     if (poll.status !== "OPEN") {
+      return res.status(409).json({
+        message: "This poll is not open for voting",
+      });
+    }
+
+    if (new Date() >= poll.endsAt) {
+      // rej cue we can close poll manually if the admin want to do that
       return res.status(409).json({
         message: "This poll is not open for voting",
       });

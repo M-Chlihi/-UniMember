@@ -11,7 +11,11 @@ const {
   createVoteSchema,
 } = require("../../validation/pollOptionsSchema");
 const { valid } = require("joi");
-const { createPoll } = require("../../controllers/pollController");
+const {
+  createPoll,
+  publishPollController,
+  closePollController,
+} = require("../../controllers/pollController");
 const {
   createPollOption,
   GETOptions,
@@ -58,4 +62,17 @@ router.get(
   verifyJWT,
   verifyRoles(ROLES.Admin, ROLES.Editor),
   getResults,
+);
+
+router.post(
+  "/:pollId/publish",
+  verifyJWT,
+  verifyRoles(ROLES.Admin, ROLES.Editor),
+  publishPollController,
+);
+router.post(
+  "/:pollId/close",
+  verifyJWT,
+  verifyRoles(ROLES.Admin, ROLES.Editor),
+  closePollController,
 );
