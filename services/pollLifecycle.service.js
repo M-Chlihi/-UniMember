@@ -70,8 +70,44 @@ const closePoll = async (pollId) => {
 
   return poll;
 };
+//time-based background processing  for automating poll behaviors
+
+const transitionScheduledPolls = async () => {
+  const now = new Date();
+
+  await Poll.updateMany(
+    {
+      status: "SCHEDULED",
+      startsAt: { $lte: now },
+      endsAt: { $gt: now },
+    },
+    {
+      $set: {
+        status: "OPEN",
+      },
+    },
+  );
+};
+
+const transitionOpenPolls = async () => {
+  const now = new Date();
+
+  await Poll.updateMany(
+    {
+      status: "OPEN",
+      endsAt: { $lte: now },
+    },
+    {
+      $set: {
+        status: "CLOSED",
+      },
+    },
+  );
+};
 
 module.exports = {
   publishPoll,
   closePoll,
+  transitionScheduledPolls,
+  transitionOpenPolls,
 };

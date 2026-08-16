@@ -44,4 +44,10 @@ const pollSchema = new mongoose.Schema(
   },
 );
 
+pollSchema.index({
+  status: 1,
+  startsAt: 1,
+  endsAt: 1,
+});
+
 module.exports = mongoose.model("Poll", pollSchema);

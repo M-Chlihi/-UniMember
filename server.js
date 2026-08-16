@@ -11,6 +11,7 @@ const cookieParser = require("cookie-parser");
 const credentialas = require("./middleware/Credentials");
 const corsOptions = require("./config/corsOptions");
 const connectDB = require("./config/dbConn");
+const { runPollLifecycleJob } = require("./jobs/pollLifecycle.job");
 const PORT = process.env.PORT || 3500;
 app.use(logger);
 app.use(express.urlencoded({ extended: false })); // built-in middleware to handle urlencoded data
@@ -33,10 +34,20 @@ app.use("/api/v1/polls", require("./routes/api/poll.routes"));
 app.use((req, res) => {
   res.status(404).send(path.join(__dirname, "views", "404.html"));
 });
+// just for testing
+const now = new Date();
+const startsAt = new Date(now.getTime() + 60 * 1000);
+const endsAt = new Date(now.getTime() + 180 * 1000);
+console.log(startsAt.toISOString());
+console.log(endsAt.toISOString());
+// just for testing
 
 app.use(errorHandler);
 const startServer = async () => {
   await connectDB();
+  //run lifecycle job once AND start the intervall
+  await runPollLifecycleJob();
+  setInterval(runPollLifecycleJob, 30_000);
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

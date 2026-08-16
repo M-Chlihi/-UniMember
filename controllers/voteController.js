@@ -39,7 +39,7 @@ const castVote = async (req, res) => {
     if (new Date() >= poll.endsAt) {
       // rej cue we can close poll manually if the admin want to do that
       return res.status(409).json({
-        message: "This poll is not open for voting",
+        message: " Voting has ended",
       });
     }
 
