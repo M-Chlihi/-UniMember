@@ -24,11 +24,16 @@ const hundleRefreshToken = async (req, res) => {
 
     const accessToken = jwt.sign(
       {
-        UserInfo: { username: foundUser.username, roles: roles },
+        // UserInfo: { username: foundUser.username, roles: roles },
+        UserInfo: {
+          id: foundUser._id,
+          username: foundUser.username,
+          roles: roles,
+        },
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "120s",
+        expiresIn: "20000s",
       },
     );
     res.json({ accessToken });

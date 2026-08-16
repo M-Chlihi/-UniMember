@@ -1,5 +1,8 @@
 const Poll = require("../models/Poll");
 const { publishPoll, closePoll } = require("../services/pollLifecycle.service");
+const PollOption = require("../models/PollOption");
+const Vote = require("../models/Vote");
+
 const createPoll = async (req, res) => {
   const { title, description, startsAt, endsAt } = req.body;
 
@@ -43,6 +46,7 @@ const publishPollController = async (req, res) => {
     });
   }
 };
+
 const closePollController = async (req, res) => {
   const { pollId } = req.params;
 
@@ -60,8 +64,48 @@ const closePollController = async (req, res) => {
     });
   }
 };
+
+const getActivePoll = async (req, res, next) => {
+  try {
+    const poll = await Poll.findOne({
+      status: "OPEN",
+    })
+      .sort({ startsAt: -1 })
+      .lean();
+
+    if (!poll) {
+      return res.status(404).json({
+        message: "No active poll",
+      });
+    }
+
+    const options = await PollOption.find({
+      pollId: poll._id,
+    })
+      .select("_id title description")
+      .lean();
+
+    const existingVote = await Vote.findOne({
+      pollId: poll._id,
+      userId: req.user,
+    })
+      .select("_id")
+      .lean();
+
+    return res.json({
+      poll: {
+        ...poll,
+        options,
+      },
+      hasVoted: Boolean(existingVote),
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   createPoll,
   publishPollController,
   closePollController,
+  getActivePoll,
 };

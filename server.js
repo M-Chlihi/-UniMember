@@ -47,7 +47,7 @@ const startServer = async () => {
   await connectDB();
   //run lifecycle job once AND start the intervall
   await runPollLifecycleJob();
-  setInterval(runPollLifecycleJob, 30_000);
+  setInterval(runPollLifecycleJob, 10_000);
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

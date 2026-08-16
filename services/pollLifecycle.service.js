@@ -77,7 +77,7 @@ const transitionScheduledPolls = async () => {
 
   await Poll.updateMany(
     {
-      status: "SCHEDULED",
+      status: "DRAFT",
       startsAt: { $lte: now },
       endsAt: { $gt: now },
     },

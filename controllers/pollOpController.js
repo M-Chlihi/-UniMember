@@ -1,10 +1,6 @@
 const Poll = require("../models/Poll");
 const PollOption = require("../models/PollOption");
 
-const GETOptions = async (req, res) => {
-  const op = await PollOption.find();
-  res.json(op);
-};
 const createPollOption = async (req, res) => {
   const { pollId } = req.params;
   const { title, description } = req.body;
@@ -55,5 +51,4 @@ const createPollOption = async (req, res) => {
 
 module.exports = {
   createPollOption,
-  GETOptions,
 };
