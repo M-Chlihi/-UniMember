@@ -1,6 +1,7 @@
 const Poll = require("../models/Poll");
 const PollOption = require("../models/PollOption");
 const Vote = require("../models/Vote");
+const { getPollResults } = require("../services/vote.service");
 
 // Does the poll exist?
 // yes
@@ -16,7 +17,7 @@ const castVote = async (req, res) => {
   const userId = req.user;
 
   try {
-    // 1. Find poll
+    // i have to find poll
     const poll = await Poll.findById(pollId).exec();
 
     if (!poll) {
@@ -25,14 +26,14 @@ const castVote = async (req, res) => {
       });
     }
 
-    // 2. Poll must be OPEN
+    //and poll must be OPEN
     if (poll.status !== "OPEN") {
       return res.status(409).json({
         message: "This poll is not open for voting",
       });
     }
 
-    // 3. Find option
+    //  find option
     const option = await PollOption.findById(optionId).exec();
 
     if (!option) {
@@ -41,14 +42,15 @@ const castVote = async (req, res) => {
       });
     }
 
-    // 4. Option must belong to this poll
+    // and thez option must app to this poll
     if (option.pollId.toString() !== pollId) {
       return res.status(400).json({
         message: "Option does not belong to this poll",
       });
     }
 
-    // 5. Check whether user already voted
+    //also check whether user already voted
+    // and msot critique is handling case if we receive 2 req at the same time from the same cleint (mong key doc)
     const existingVote = await Vote.findOne({
       pollId,
       userId,
@@ -60,7 +62,7 @@ const castVote = async (req, res) => {
       });
     }
 
-    // 6. Create vote
+    // create vote
     const vote = await Vote.create({
       pollId,
       optionId,
@@ -86,6 +88,40 @@ const castVote = async (req, res) => {
   }
 };
 
+const getResults = async (req, res) => {
+  const { pollId } = req.params;
+
+  try {
+    const poll = await Poll.findById(pollId).select("status").exec();
+
+    if (!poll) {
+      return res.status(404).json({
+        message: "Poll not found",
+      });
+    }
+
+    if (poll.status !== "CLOSED") {
+      return res.status(409).json({
+        message: "Results are available after the poll closes",
+      });
+    }
+
+    const results = await getPollResults(pollId);
+
+    return res.status(200).json({
+      pollId,
+      ...results,
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
 module.exports = {
   castVote,
+  getResults,
 };
