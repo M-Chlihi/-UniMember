@@ -1,6 +1,6 @@
 const Poll = require("../models/Poll");
 const PollOption = require("../models/PollOption");
-const { notifyPollClosed } = require("./notification.service");
+const { createPollResultNotification } = require("./notification.service");
 const { getPollResults } = require("./vote.service");
 const publishPoll = async (pollId) => {
   const poll = await Poll.findById(pollId).exec();
@@ -90,20 +90,8 @@ const transitionScheduledPolls = async () => {
 };
 
 const transitionOpenPolls = async () => {
-  // when we want scall we'll redesign this around jobs/events and bulk operations.
   const now = new Date();
 
-  // await Poll.updateMany(
-  //   {
-  //     status: "OPEN",
-  //     endsAt: { $lte: now },
-  //   },
-  //   {
-  //     $set: {
-  //       status: "CLOSED",
-  //     },
-  //   },
-  // );
   const pollsToClose = await Poll.find({
     status: "OPEN",
     endsAt: { $lte: now },
@@ -116,9 +104,10 @@ const transitionOpenPolls = async () => {
     // notification later
     const results = await getPollResults(poll._id);
 
-    await notifyPollClosed({
+    await createPollResultNotification({
       poll,
       results,
+      recipientId: poll.createdBy,
     });
   }
 };

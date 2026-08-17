@@ -38,15 +38,15 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
+  const { email, password } = req.body;
+  if (!email || !password) {
     return res.status(400).json({
-      message: "username and passwrod are required",
+      message: "email and passwrod are required",
     });
   }
 
   try {
-    const foundUser = await User.findOne({ username: username })
+    const foundUser = await User.findOne({ email: email })
       .select("+password")
       .exec();
     if (!foundUser) return res.sendStatus(401);
@@ -63,7 +63,7 @@ const login = async (req, res) => {
       {
         UserInfo: {
           id: foundUser._id,
-          username: foundUser.username,
+          email: foundUser.email,
           roles: roles,
         },
       },
@@ -74,7 +74,7 @@ const login = async (req, res) => {
     );
     const refreshToken = jwt.sign(
       {
-        username: foundUser.username,
+        email: foundUser.email,
       },
       process.env.REFRESH_TOKEN_SECRET,
       {
