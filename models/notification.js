@@ -28,13 +28,26 @@ const notificationSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["PENDING", "SENT", "FAILED"],
+      enum: ["PENDING", "PROCESSING", "SENT", "FAILED"],
       default: "PENDING",
     },
 
-    sentAt: Date,
+    attempts: {
+      type: Number,
+      default: 0,
+    },
 
-    error: String,
+    lastAttemptAt: {
+      type: Date,
+    },
+
+    sentAt: {
+      type: Date,
+    },
+
+    error: {
+      type: String,
+    },
   },
   {
     timestamps: true,
