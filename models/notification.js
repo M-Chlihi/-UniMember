@@ -40,7 +40,10 @@ const notificationSchema = new mongoose.Schema(
     lastAttemptAt: {
       type: Date,
     },
-
+    nextAttemptAt: {
+      type: Date,
+      default: null,
+    },
     sentAt: {
       type: Date,
     },

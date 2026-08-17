@@ -4,6 +4,7 @@ const Notification = require("../models/Notification");
 const { sendEmail } = require("./provider/email.provider");
 const { getPollResults } = require("./vote.service");
 const { buildPollResultEmail } = require("./notificationContent.service");
+const { getNextAttemptAt } = require("../utils/retryPolicy");
 
 const createPollResultNotification = async ({ poll, results, recipientId }) => {
   const notification = await Notification.create({
@@ -150,7 +151,7 @@ const deliverNotification = async (notificationId) => {
   } catch (err) {
     notification.status = "FAILED";
     notification.error = err.message;
-
+    notification.nextAttemptAt = getNextAttemptAt(notification.attempts);
     await notification.save();
 
     throw err;

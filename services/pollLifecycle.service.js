@@ -2,6 +2,7 @@ const Poll = require("../models/Poll");
 const PollOption = require("../models/PollOption");
 const { createPollResultNotification } = require("./notification.service");
 const { getPollResults } = require("./vote.service");
+const { retryFailedNotifications } = require("./notificationRetry.service");
 const publishPoll = async (pollId) => {
   const poll = await Poll.findById(pollId).exec();
   if (!poll) {
@@ -110,6 +111,9 @@ const transitionOpenPolls = async () => {
       recipientId: poll.createdBy,
     });
   }
+  setInterval(async () => {
+    await retryFailedNotifications();
+  }, 10_000);
 };
 
 module.exports = {
