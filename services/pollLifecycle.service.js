@@ -2,7 +2,6 @@ const Poll = require("../models/Poll");
 const PollOption = require("../models/PollOption");
 const { createPollResultNotification } = require("./notification.service");
 const { getPollResults } = require("./vote.service");
-const { retryFailedNotifications } = require("./notificationRetry.service");
 const publishPoll = async (pollId) => {
   const poll = await Poll.findById(pollId).exec();
   if (!poll) {
@@ -73,47 +72,87 @@ const closePoll = async (pollId) => {
 };
 //time-based background processing  for automating poll behaviors
 
+// const transitionScheduledPolls = async () => {
+//   const now = new Date();
+
+//   await Poll.updateMany(
+//     {
+//       status: "DRAFT",
+//       startsAt: { $lte: now },
+//       endsAt: { $gt: now },
+//     },
+//     {
+//       $set: {
+//         status: "OPEN",
+//       },
+//     },
+//   );
+// };
+
+// const transitionOpenPolls = async () => {
+//   const now = new Date();
+
+//   const pollsToClose = await Poll.find({
+//     status: "OPEN",
+//     endsAt: { $lte: now },
+//   }).exec();
+
+//   for (const poll of pollsToClose) {
+//     poll.status = "CLOSED";
+//     await poll.save();
+
+//     // notification later
+//     const results = await getPollResults(poll._id);
+
+//     await createPollResultNotification({
+//       poll,
+//       results,
+//       recipientId: poll.createdBy,
+//     });
+//   }
+// };
+
 const transitionScheduledPolls = async () => {
   const now = new Date();
 
-  await Poll.updateMany(
-    {
-      status: "DRAFT",
-      startsAt: { $lte: now },
-      endsAt: { $gt: now },
+  const polls = await Poll.find({
+    status: "DRAFT",
+    startsAt: {
+      $lte: now,
     },
-    {
-      $set: {
-        status: "OPEN",
-      },
-    },
-  );
+  }).exec();
+
+  for (const poll of polls) {
+    poll.status = "OPEN";
+
+    await poll.save();
+  }
 };
 
 const transitionOpenPolls = async () => {
   const now = new Date();
 
-  const pollsToClose = await Poll.find({
+  const polls = await Poll.find({
     status: "OPEN",
-    endsAt: { $lte: now },
-  }).exec();
+    endsAt: {
+      $lte: now,
+    },
+  })
+    .populate("createdBy", "email username")
+    .exec();
 
-  for (const poll of pollsToClose) {
+  for (const poll of polls) {
     poll.status = "CLOSED";
+
     await poll.save();
 
-    // notification later
     const results = await getPollResults(poll._id);
 
     await createPollResultNotification({
       poll,
-      results,
-      recipientId: poll.createdBy,
+      recipientId: poll.createdBy._id,
     });
   }
-  setInterval(async () => {
-    await retryFailedNotifications();
-  }, 10_000);
 };
 
 module.exports = {

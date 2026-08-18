@@ -1,0 +1,20 @@
+const NOTIFICATION_STATUS = Object.freeze({
+  PENDING: "PENDING",
+  PROCESSING: "PROCESSING",
+  SENT: "SENT",
+  FAILED: "FAILED",
+});
+
+const NOTIFICATION_TYPE = Object.freeze({
+  POLL_RESULT: "POLL_RESULT",
+});
+
+const NOTIFICATION_CHANNEL = Object.freeze({
+  EMAIL: "EMAIL",
+});
+
+module.exports = {
+  NOTIFICATION_STATUS,
+  NOTIFICATION_TYPE,
+  NOTIFICATION_CHANNEL,
+};

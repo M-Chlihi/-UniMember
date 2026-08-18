@@ -1,157 +1,103 @@
 // services/notification.service.js
 
 const Notification = require("../models/Notification");
-const { sendEmail } = require("./provider/email.provider");
-const { getPollResults } = require("./vote.service");
-const { buildPollResultEmail } = require("./notificationContent.service");
-const { getNextAttemptAt } = require("../utils/retryPolicy");
 
-const createPollResultNotification = async ({ poll, results, recipientId }) => {
+const {
+  NOTIFICATION_STATUS,
+  NOTIFICATION_CHANNEL,
+  NOTIFICATION_TYPE,
+} = require("../utils/notificationConstantes");
+
+const {
+  MAX_ATTEMPTS,
+  calculateNextAttemptAt,
+} = require("../utils/retryPolicy");
+
+const { getPollResults } = require("./vote.service");
+
+const { buildPollResultEmail } = require("./notificationContent.service");
+
+const { sendEmail } = require("./provider/email.provider");
+
+const createPollResultNotification = async ({ poll, recipientId }) => {
   const notification = await Notification.create({
     pollId: poll._id,
-    recipientId: poll.createdBy,
-    type: "POLL_RESULT",
-    channel: "EMAIL",
-    status: "PENDING",
-  });
+    recipientId,
 
-  await deliverNotification(notification._id);
+    type: NOTIFICATION_TYPE.POLL_RESULT,
+
+    channel: NOTIFICATION_CHANNEL.EMAIL,
+
+    status: NOTIFICATION_STATUS.PENDING,
+
+    attempts: 0,
+  });
 
   return notification;
 };
 
-// const deliverNotification = async (notificationId) => {
-//   const notification = await Notification.findById(notificationId)
-//     .populate("recipientId", "email username")
-//     .populate("pollId", "title")
-//     .exec();
-
-//   if (!notification) {
-//     throw new Error("Notification not found");
-//   }
-
-//   if (notification.status === "SENT") {
-//     return notification;
-//   }
-
-//   try {
-//     await sendEmail({
-//       to: notification.recipientId.email,
-//       subject: `CS Club — Poll Result`,
-//       text: `The poll "${notification.pollId.title}" has closed`,
-//     });
-
-//     notification.status = "SENT";
-//     notification.sentAt = new Date();
-
-//     await notification.save();
-//   } catch (err) {
-//     notification.status = "FAILED";
-//     notification.error = err.message;
-
-//     await notification.save();
-
-//     throw err;
-//   }
-// };
-
-// const deliverNotification = async (notificationId) => {
-//   const notification = await Notification.findById(notificationId)
-//     .populate("recipientId", "email username")
-//     .populate("pollId", "title")
-//     .exec();
-
-//   if (!notification) {
-//     throw new Error("Notification not found");
-//   }
-
-//   if (notification.status === "SENT") {
-//     return notification;
-//   }
-
-//   notification.status = "PROCESSING";
-//   notification.attempts += 1;
-//   notification.lastAttemptAt = new Date();
-//   notification.error = undefined;
-
-//   await notification.save();
-
-//   try {
-//     const result = await sendEmail({
-//       to: notification.recipientId.email,
-//       subject: `CS Club — Poll Result`,
-//       html: `
-//         <h2>${notification.pollId.title}</h2>
-//         <p>The poll has closed.</p>
-//       `,
-//       idempotencyKey: `poll-result:${notification.pollId._id}:${notification.recipientId._id}`,
-//     });
-
-//     notification.status = "SENT";
-//     notification.sentAt = new Date();
-
-//     await notification.save();
-
-//     return {
-//       notification,
-//       providerResponse: result,
-//     };
-//   } catch (err) {
-//     notification.status = "FAILED";
-//     notification.error = err.message;
-
-//     await notification.save();
-
-//     throw err;
-//   }
-// };
-
-const deliverNotification = async (notificationId) => {
-  const notification = await Notification.findById(notificationId)
-    .populate("recipientId", "email username")
-    .populate("pollId", "title")
-    .exec();
-
-  if (!notification) {
-    throw new Error("Notification not found");
+const deliverClaimedNotification = async (notification) => {
+  if (notification.status !== NOTIFICATION_STATUS.PROCESSING) {
+    throw new Error("Notification must be PROCESSING");
   }
-
-  if (notification.status === "SENT") {
-    return notification;
-  }
-
-  notification.status = "PROCESSING";
-  notification.attempts += 1;
-  notification.lastAttemptAt = new Date();
-  notification.error = undefined;
-
-  await notification.save();
 
   try {
-    const results = await getPollResults(notification.pollId._id);
+    const recipient = notification.recipientId;
+
+    const poll = notification.pollId;
+
+    if (!recipient?.email) {
+      throw new Error("Recipient email not found");
+    }
+
+    if (!poll?.title) {
+      throw new Error("Poll title not found");
+    }
+
+    const results = await getPollResults(poll._id);
 
     const { subject, html } = buildPollResultEmail({
-      poll: notification.pollId,
+      poll,
       results,
     });
 
-    const result = await sendEmail({
-      to: notification.recipientId.email,
+    const idempotencyKey = `poll-result:${poll._id}:${recipient._id}`;
+
+    await sendEmail({
+      to: recipient.email,
       subject,
       html,
-      idempotencyKey: `poll-result:${notification.pollId._id}:${notification.recipientId._id}`,
+      idempotencyKey,
     });
 
-    notification.status = "SENT";
+    notification.status = NOTIFICATION_STATUS.SENT;
+
     notification.sentAt = new Date();
+
+    notification.processingStartedAt = null;
+
+    notification.nextAttemptAt = null;
+
+    notification.error = null;
 
     await notification.save();
 
-    return result;
+    return notification;
   } catch (err) {
-    notification.status = "FAILED";
+    notification.status = NOTIFICATION_STATUS.FAILED;
+
+    notification.processingStartedAt = null;
+
     notification.error = err.message;
-    notification.nextAttemptAt = getNextAttemptAt(notification.attempts);
+
+    if (notification.attempts < MAX_ATTEMPTS) {
+      notification.nextAttemptAt = calculateNextAttemptAt(
+        notification.attempts,
+      );
+    } else {
+      notification.nextAttemptAt = null;
+    }
+
     await notification.save();
 
     throw err;
@@ -160,5 +106,5 @@ const deliverNotification = async (notificationId) => {
 
 module.exports = {
   createPollResultNotification,
-  deliverNotification,
+  deliverClaimedNotification,
 };

@@ -1,23 +1,16 @@
 const MAX_ATTEMPTS = 3;
 
-const getRetryDelay = (attemp) => {
-  const delay = {
-    1: 30 * 1000,
-    2: 2 * 60 * 1000,
-  };
-  return delay[attemp] ?? null;
+const BASE_DELAY_MS = 30 * 1000;
+
+const calculateNextAttemptAt = (attempt) => {
+  const exponentialDelay = BASE_DELAY_MS * 2 ** (attempt - 1);
+
+  const jitter = Math.floor(Math.random() * 10_000);
+
+  return new Date(Date.now() + exponentialDelay + jitter);
 };
 
-const getNextAttemptAt = (attempt) => {
-  const delay = getRetryDelay(attempt);
-
-  if (delay === null) {
-    return null;
-  }
-  return new Date(Date.now() + delay);
-};
 module.exports = {
   MAX_ATTEMPTS,
-  getRetryDelay,
-  getNextAttemptAt,
+  calculateNextAttemptAt,
 };

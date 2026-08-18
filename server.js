@@ -3,6 +3,7 @@ const path = require("path");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
+const { startJobs } = require("./jobs");
 
 const { logger } = require("./middleware/logger");
 const { errorHandler } = require("./middleware/errorHandler");
@@ -46,9 +47,8 @@ app.use(errorHandler);
 const startServer = async () => {
   await connectDB();
   //run lifecycle job once AND start the intervall
-  await runPollLifecycleJob();
-  setInterval(runPollLifecycleJob, 10_000);
 
+  await startJobs();
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
