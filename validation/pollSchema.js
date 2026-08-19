@@ -1,5 +1,32 @@
 const Joi = require("joi");
 
+const listPollsQuerySchema = Joi.object({
+  status: Joi.string().valid(
+    "DRAFT",
+    "SCHEDULED",
+    "OPEN",
+    "CLOSED",
+    "CANCELLED",
+  ),
+
+  sort: Joi.string()
+    .valid(
+      "createdAt",
+      "-createdAt",
+      "startsAt",
+      "-startsAt",
+      "endsAt",
+      "-endsAt",
+      "title",
+      "-title",
+    )
+    .default("-createdAt"),
+
+  page: Joi.number().integer().min(1).default(1),
+
+  limit: Joi.number().integer().min(1).max(50).default(10),
+});
+
 const createPollSchema = Joi.object({
   title: Joi.string().trim().min(5).max(150).required(),
 
@@ -12,4 +39,5 @@ const createPollSchema = Joi.object({
 
 module.exports = {
   createPollSchema,
+  listPollsQuerySchema,
 };

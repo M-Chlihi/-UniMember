@@ -50,4 +50,9 @@ pollSchema.index({
   endsAt: 1,
 });
 
+pollSchema.index({
+  status: 1,
+  startsAt: 1,
+});
+
 module.exports = mongoose.model("Poll", pollSchema);

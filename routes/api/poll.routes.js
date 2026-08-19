@@ -2,10 +2,12 @@ const express = require("express");
 const router = express.Router();
 const ROLES = require("../../config/roles_list");
 const verifyJWT = require("../../middleware/verifyJWT");
-
 const verifyRoles = require("../../middleware/verifyRoles");
 const validate = require("../../middleware/validation");
-const { createPollSchema } = require("../../validation/pollSchema");
+const {
+  createPollSchema,
+  listPollsQuerySchema,
+} = require("../../validation/pollSchema");
 const {
   createPollOptionSchema,
   createVoteSchema,
@@ -16,6 +18,8 @@ const {
   publishPollController,
   closePollController,
   getActivePoll,
+  getPoll,
+  getPollById,
 } = require("../../controllers/pollController");
 const { createPollOption } = require("../../controllers/pollOpController");
 const {
@@ -24,6 +28,19 @@ const {
   getMyVote,
 } = require("../../controllers/voteController");
 
+router.get(
+  "/",
+  verifyJWT,
+  verifyRoles(ROLES.Admin, ROLES.Editor),
+  validate(listPollsQuerySchema),
+  getPoll,
+);
+router.get(
+  "/:pollId",
+  verifyJWT,
+  verifyRoles(ROLES.User, ROLES.Editor, ROLES.Admin),
+  getPollById,
+);
 router.post(
   "/",
   verifyJWT,

@@ -2,6 +2,30 @@ const Poll = require("../models/Poll");
 const { publishPoll, closePoll } = require("../services/pollLifecycle.service");
 const PollOption = require("../models/PollOption");
 const Vote = require("../models/Vote");
+const {
+  listPolls,
+  getPollByIdservice,
+} = require("../services/getPoll.service");
+
+const getPoll = async (req, res, next) => {
+  try {
+    const result = await listPolls(req.query);
+    return res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+const getPollById = async (req, res, next) => {
+  try {
+    const poll = await getPollByIdservice(req.params.pollId);
+
+    return res.status(200).json({
+      data: poll,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 const createPoll = async (req, res) => {
   const { title, description, startsAt, endsAt } = req.body;
@@ -104,6 +128,8 @@ const getActivePoll = async (req, res, next) => {
   }
 };
 module.exports = {
+  getPoll,
+  getPollById,
   createPoll,
   publishPollController,
   closePollController,
