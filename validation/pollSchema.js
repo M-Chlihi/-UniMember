@@ -36,8 +36,17 @@ const createPollSchema = Joi.object({
 
   endsAt: Joi.date().iso().greater(Joi.ref("startsAt")).required(),
 });
+const updatePollSchema = Joi.object({
+  title: Joi.string().trim().min(5).max(150),
 
+  description: Joi.string().trim().max(1000).allow("", null),
+
+  startsAt: Joi.date().iso(),
+
+  endsAt: Joi.date().iso(),
+}).min(1);
 module.exports = {
   createPollSchema,
   listPollsQuerySchema,
+  updatePollSchema,
 };

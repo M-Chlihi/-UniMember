@@ -4,9 +4,11 @@ const ROLES = require("../../config/roles_list");
 const verifyJWT = require("../../middleware/verifyJWT");
 const verifyRoles = require("../../middleware/verifyRoles");
 const validate = require("../../middleware/validation");
+
 const {
   createPollSchema,
   listPollsQuerySchema,
+  updatePollSchema,
 } = require("../../validation/pollSchema");
 const {
   createPollOptionSchema,
@@ -20,6 +22,9 @@ const {
   getActivePoll,
   getPoll,
   getPollById,
+  updatePollController,
+  cancelPollController,
+  deleteDraftPollController,
 } = require("../../controllers/pollController");
 const { createPollOption } = require("../../controllers/pollOpController");
 const {
@@ -48,7 +53,13 @@ router.post(
   validate(createPollSchema),
   createPoll,
 );
-
+router.patch(
+  "/:pollId",
+  verifyJWT,
+  verifyRoles(ROLES.Admin, ROLES.Editor),
+  validate(updatePollSchema),
+  updatePollController,
+);
 router.get(
   "/active",
   verifyJWT,
@@ -101,5 +112,16 @@ router.post(
   verifyRoles(ROLES.Admin, ROLES.Editor),
   closePollController,
 );
-
+router.post(
+  "/:pollId/cancel",
+  verifyJWT,
+  verifyRoles(ROLES.Admin, ROLES.Editor),
+  cancelPollController,
+);
+router.post(
+  "/:pollId/delete",
+  verifyJWT,
+  verifyRoles(ROLES.Admin, ROLES.Editor),
+  deleteDraftPollController,
+);
 module.exports = router;

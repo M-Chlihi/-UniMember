@@ -3,6 +3,12 @@ const { publishPoll, closePoll } = require("../services/pollLifecycle.service");
 const PollOption = require("../models/PollOption");
 const Vote = require("../models/Vote");
 const {
+  updatePoll,
+  cancelPoll,
+  deleteDraftPoll,
+} = require("../services/poll.service");
+const { formatPollDetail } = require("../utils/Mapper");
+const {
   listPolls,
   getPollByIdservice,
 } = require("../services/getPoll.service");
@@ -127,11 +133,40 @@ const getActivePoll = async (req, res, next) => {
     next(err);
   }
 };
+
+const updatePollController = async (req, res, next) => {
+  try {
+    const poll = await updatePoll(req.params.pollId, req.body);
+    return res.status(200).json({ data: formatPollDetail(poll) });
+  } catch (err) {
+    next(err);
+  }
+};
+const cancelPollController = async (req, res, next) => {
+  try {
+    await cancelPoll(req.params.pollId);
+    return res.status(200).json({ message: "Poll Concelled !" });
+  } catch (err) {
+    next(err);
+  }
+};
+const deleteDraftPollController = async (req, res, next) => {
+  try {
+    await deleteDraftPoll(req.params.pollId);
+    return res.status(200).json({ message: "Poll Deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  getPoll,
-  getPollById,
   createPoll,
   publishPollController,
   closePollController,
   getActivePoll,
+  updatePollController,
+  cancelPollController,
+  deleteDraftPollController,
+  getPoll,
+  getPollById,
 };
