@@ -67,6 +67,78 @@ const getPollResults = async (pollId) => {
   };
 };
 
+const Vote = require("../models/Vote");
+
+const getVotingHistory = async ({
+  userId,
+  page = 1,
+  limit = 10,
+  sort = "-createdAt",
+}) => {
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const sortDirection = sort === "-createdAt" ? -1 : 1;
+
+  const [votes, total] = await Promise.all([
+    Vote.find({
+      userId,
+    })
+      .select("_id pollId optionId createdAt")
+      .populate({
+        path: "pollId",
+        select: "_id title description status startsAt endsAt",
+      })
+      .populate({
+        path: "optionId",
+        select: "_id title description",
+      })
+      .sort({
+        createdAt: sortDirection,
+      })
+      .skip(skip)
+      .limit(limitNumber)
+      .lean(),
+
+    Vote.countDocuments({
+      userId,
+    }),
+  ]);
+
+  const totalPages = Math.ceil(total / limitNumber);
+
+  return {
+    data: votes.map((vote) => ({
+      poll: {
+        id: vote.pollId._id.toString(),
+        title: vote.pollId.title,
+        description: vote.pollId.description,
+        status: vote.pollId.status,
+        startsAt: vote.pollId.startsAt,
+        endsAt: vote.pollId.endsAt,
+      },
+
+      myVote: {
+        optionId: vote.optionId._id.toString(),
+        optionTitle: vote.optionId.title,
+        votedAt: vote.createdAt,
+      },
+    })),
+
+    pagination: {
+      page: pageNumber,
+      limit: limitNumber,
+      total,
+      totalPages,
+      hasNextPage: pageNumber < totalPages,
+      hasPreviousPage: pageNumber > 1,
+    },
+  };
+};
+
 module.exports = {
   getPollResults,
+  getVotingHistory,
 };

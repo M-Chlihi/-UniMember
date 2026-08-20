@@ -1,7 +1,10 @@
 const Poll = require("../models/Poll");
 const PollOption = require("../models/PollOption");
 const Vote = require("../models/Vote");
-const { getPollResults } = require("../services/vote.service");
+const {
+  getPollResults,
+  getVotingHistory,
+} = require("../services/vote.service");
 
 // Does the poll exist?
 // yes
@@ -163,8 +166,25 @@ const getMyVote = async (req, res, next) => {
   }
 };
 
+const getVotingHistoryController = async (req, res, next) => {
+  try {
+    const result = await getVotingHistory({
+      userId: req.user,
+      ...req.query,
+    });
+
+    return res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = {
+  getVotingHistoryController,
+};
 module.exports = {
   castVote,
   getResults,
   getMyVote,
+  getVotingHistoryController,
 };

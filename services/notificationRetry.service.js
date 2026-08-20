@@ -36,7 +36,7 @@ const processNotifications = async () => {
     .limit(100)
     .exec();
 
-  console.log(`Notification candidates found: ${candidates.length}`);
+  // console.log(`Notification candidates found: ${candidates.length}`);
 
   for (const candidate of candidates) {
     try {

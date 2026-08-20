@@ -9,6 +9,7 @@ const {
   createPollSchema,
   listPollsQuerySchema,
   updatePollSchema,
+  historyQuerySchema,
 } = require("../../validation/pollSchema");
 const {
   createPollOptionSchema,
@@ -31,6 +32,7 @@ const {
   castVote,
   getResults,
   getMyVote,
+  getVotingHistoryController,
 } = require("../../controllers/voteController");
 
 router.get(
@@ -40,6 +42,20 @@ router.get(
   validate(listPollsQuerySchema),
   getPoll,
 );
+router.get(
+  "/history",
+  verifyJWT,
+  verifyRoles(ROLES.User, ROLES.Editor, ROLES.Admin),
+  validate(historyQuerySchema),
+  getVotingHistoryController,
+);
+router.get(
+  "/active",
+  verifyJWT,
+  verifyRoles(ROLES.User, ROLES.Editor, ROLES.Admin),
+  getActivePoll,
+);
+
 router.get(
   "/:pollId",
   verifyJWT,
@@ -59,12 +75,6 @@ router.patch(
   verifyRoles(ROLES.Admin, ROLES.Editor),
   validate(updatePollSchema),
   updatePollController,
-);
-router.get(
-  "/active",
-  verifyJWT,
-  verifyRoles(ROLES.User, ROLES.Editor, ROLES.Admin),
-  getActivePoll,
 );
 
 router.post(

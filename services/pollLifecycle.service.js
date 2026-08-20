@@ -122,17 +122,6 @@ const transitionScheduledPolls = async () => {
     },
   }).exec();
 
-  const optionsCount = await PollOption.countDocuments({
-    pollId,
-  });
-
-  if (optionsCount < 3 || optionsCount > 4) {
-    const error = new Error(
-      "A poll must contain between 3 and 4 options before publishing",
-    );
-    error.status = 409;
-    throw error;
-  }
   for (const poll of polls) {
     poll.status = "OPEN";
 
