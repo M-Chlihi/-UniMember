@@ -46,7 +46,7 @@ router.get(
   "/history",
   verifyJWT,
   verifyRoles(ROLES.User, ROLES.Editor, ROLES.Admin),
-  validate(historyQuerySchema),
+  validate(historyQuerySchema, "query"),
   getVotingHistoryController,
 );
 router.get(

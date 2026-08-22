@@ -16,7 +16,7 @@ router.get(
   "/",
   verifyJWT,
   verifyRoles(ROLES.Admin),
-  validate(notificationListQuerySchema),
+  validate(notificationListQuerySchema, "query"),
   getNotifications,
 );
 
