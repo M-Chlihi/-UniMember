@@ -1,5 +1,4 @@
 // enable CORS
-const credentialas = require("../middleware/Credentials");
 const allowOrigins = require("./allowOrigin");
 const corsOptions = {
   origin: (origin, callback) => {
