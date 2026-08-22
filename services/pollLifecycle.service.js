@@ -42,7 +42,7 @@ const publishPoll = async (pollId) => {
     throw error;
   }
 
-  poll.status = "OPEN";
+  poll.status = "SCHEDULED";
 
   await poll.save();
 
@@ -70,56 +70,16 @@ const closePoll = async (pollId) => {
 
   return poll;
 };
-//time-based background processing  for automating poll behaviors
-
-// const transitionScheduledPolls = async () => {
-//   const now = new Date();
-
-//   await Poll.updateMany(
-//     {
-//       status: "DRAFT",
-//       startsAt: { $lte: now },
-//       endsAt: { $gt: now },
-//     },
-//     {
-//       $set: {
-//         status: "OPEN",
-//       },
-//     },
-//   );
-// };
-
-// const transitionOpenPolls = async () => {
-//   const now = new Date();
-
-//   const pollsToClose = await Poll.find({
-//     status: "OPEN",
-//     endsAt: { $lte: now },
-//   }).exec();
-
-//   for (const poll of pollsToClose) {
-//     poll.status = "CLOSED";
-//     await poll.save();
-
-//     // notification later
-//     const results = await getPollResults(poll._id);
-
-//     await createPollResultNotification({
-//       poll,
-//       results,
-//       recipientId: poll.createdBy,
-//     });
-//   }
-// };
 
 const transitionScheduledPolls = async () => {
   const now = new Date();
 
   const polls = await Poll.find({
-    status: "DRAFT",
+    status: "SCHEDULED",
     startsAt: {
       $lte: now,
     },
+    endsAt: { $gt: now },
   }).exec();
 
   for (const poll of polls) {

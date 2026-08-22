@@ -1,13 +1,18 @@
-const validate = (schema) => {
+const validate = (schema, property = "body") => {
   return (req, res, next) => {
-    const { error, value } = schema.validate(req.body, { abortEarly: false });
+    const { error, value } = schema.validate(req[property], {
+      abortEarly: false,
+      stripUnknown: true,
+    });
 
     if (error) {
       return res.status(400).json({
         message: error.details[0].message,
       });
     }
-    req.body = value;
+
+    req[property] = value;
+
     next();
   };
 };

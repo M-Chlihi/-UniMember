@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { refreshCookieOptions } = require("../config/cookieOptions");
 
 const bycript = require("bcrypt");
 require("dotenv").config();
@@ -12,7 +13,7 @@ const register = async (req, res) => {
       $or: [{ username }, { email }],
     }).exec();
     if (duplicate) {
-      return res.sendStatus(409).json({
+      return res.status(409).json({
         message: "Username or email already exists",
       });
     } // conflict
@@ -69,7 +70,7 @@ const login = async (req, res) => {
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "120s",
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
       },
     );
     const refreshToken = jwt.sign(
@@ -78,7 +79,7 @@ const login = async (req, res) => {
       },
       process.env.REFRESH_TOKEN_SECRET,
       {
-        expiresIn: "20000s",
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
       },
     );
 
@@ -88,13 +89,22 @@ const login = async (req, res) => {
     await foundUser.save();
 
     // create JWTs
-    res.cookie("jwt", refreshToken, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 60 * 1000,
+    // res.cookie("jwt", refreshToken, {
+    //   httpOnly: true,
+    //   sameSite: "lax",
+    //   secure: process.env.NODE_ENV === "production",
+    //   maxAge: 24 * 60 * 60 * 1000,
+    // });
+    res.cookie("jwt", refreshToken, refreshCookieOptions);
+    res.json({
+      accessToken,
+      user: {
+        id: foundUser._id.toString(),
+        username: foundUser.username,
+        email: foundUser.email,
+        roles: roles,
+      },
     });
-    res.json({ accessToken });
   } catch (err) {
     console.error(err);
 

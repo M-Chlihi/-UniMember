@@ -1,6 +1,7 @@
 // const saveEmployees = require("../utils/dataFormatter");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { refreshCookieOptions } = require("../config/cookieOptions");
 
 const hundleLogoutToken = async (req, res) => {
   const cookies = req.cookies;
@@ -32,11 +33,7 @@ const hundleLogoutToken = async (req, res) => {
     await foundUser.save();
 
     // Remove refresh token from browser
-    res.clearCookie("jwt", {
-      httpOnly: true,
-      sameSite: "None",
-      secure: true,
-    });
+    res.clearCookie("jwt", refreshCookieOptions);
 
     res.sendStatus(204);
   } catch (err) {

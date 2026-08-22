@@ -7,7 +7,7 @@ const {
   cancelPoll,
   deleteDraftPoll,
 } = require("../services/poll.service");
-const { formatPollDetail } = require("../utils/Mapper");
+const { formatPollDetail, formatPollOption } = require("../utils/Mapper");
 const {
   listPolls,
   getPollByIdservice,
@@ -47,7 +47,7 @@ const createPoll = async (req, res) => {
 
     return res.status(201).json({
       message: "Poll created successfully",
-      poll,
+      data: formatPollDetail(poll),
     });
   } catch (err) {
     console.error(err);
@@ -66,7 +66,7 @@ const publishPollController = async (req, res) => {
 
     return res.status(200).json({
       message: "Poll published successfully",
-      poll,
+      data: formatPollDetail(poll),
     });
   } catch (err) {
     console.error(err);
@@ -122,12 +122,19 @@ const getActivePoll = async (req, res, next) => {
       .select("_id")
       .lean();
 
-    return res.json({
-      poll: {
-        ...poll,
-        options,
+    // return res.json({
+    //   poll: {
+    //     ...poll,
+    //     options,
+    //   },
+    //   hasVoted: Boolean(existingVote),
+    // });
+    return res.status(200).json({
+      data: {
+        poll: formatPollDetail(poll),
+        options: options.map(formatPollOption),
+        hasVoted: Boolean(existingVote),
       },
-      hasVoted: Boolean(existingVote),
     });
   } catch (err) {
     next(err);

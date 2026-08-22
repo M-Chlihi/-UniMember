@@ -25,8 +25,17 @@ const formatPollOption = (option) => ({
   description: option.description,
 });
 
+const formatUser = (user) => ({
+  id: user._id.toString(),
+  username: user.username,
+  email: user.email,
+  roles: Object.values(user.roles),
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+});
 module.exports = {
   formatPollListItem,
   formatPollDetail,
   formatPollOption,
+  formatUser,
 };

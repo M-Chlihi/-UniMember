@@ -3,12 +3,10 @@ const User = require("../models/User");
 
 const hundleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
-  console.log("Cookies:", req.cookies);
 
   if (!cookies?.jwt) {
     return res.sendStatus(401);
   }
-  console.log(cookies.jwt);
   const refreshToken = cookies.jwt;
 
   const foundUser = await User.findOne({
@@ -32,10 +30,18 @@ const hundleRefreshToken = async (req, res) => {
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "20000s",
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
       },
     );
-    res.json({ accessToken });
+    res.json({
+      accessToken,
+      user: {
+        id: foundUser._id.toString(),
+        username: foundUser.username,
+        email: foundUser.email,
+        roles,
+      },
+    });
   });
 };
 

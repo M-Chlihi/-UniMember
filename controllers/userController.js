@@ -1,8 +1,17 @@
 const User = require("../models/User");
+const { formatUser } = require("../utils/Mapper");
+const GETUser = async (req, res, next) => {
+  try {
+    const users = await User.find()
+      .select("_id username email roles createdAt updatedAt")
+      .lean();
 
-const GETUser = async (req, res) => {
-  const users = await User.find();
-  res.json(users);
+    return res.json({
+      data: users.map(formatUser),
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 const updateUserRoles = async (req, res) => {
   const { id } = req.params;
