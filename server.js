@@ -7,7 +7,6 @@ const { startJobs } = require("./jobs");
 
 const { logger } = require("./middleware/logger");
 const { errorHandler } = require("./middleware/errorHandler");
-const verifyJWT = require("./middleware/verifyJWT");
 const cookieParser = require("cookie-parser");
 const credentialas = require("./middleware/Credentials");
 const corsOptions = require("./config/corsOptions");
@@ -24,25 +23,23 @@ app.use(cors(corsOptions));
 // middlware for cookies
 app.use(cookieParser());
 
-app.use("/regUsers", require("./routes/api/signUpApi"));
-app.use("/login", require("./routes/api/login"));
-app.use("/refresh", require("./routes/api/refresh"));
-app.use("/users", require("./routes/api/users"));
-app.use("/logout", require("./routes/api/logout"));
-// app.use(verifyJWT);
+app.use("/api/v1/auth/register", require("./routes/api/signUpApi"));
+
+app.use("/api/v1/auth/login", require("./routes/api/login"));
+
+app.use("/api/v1/auth/refresh", require("./routes/api/refresh"));
+
+app.use("/api/v1/auth/logout", require("./routes/api/logout"));
+
+app.use("/api/v1/users", require("./routes/api/Users"));
+
 app.use("/api/v1/polls", require("./routes/api/poll.routes"));
-app.use("/notif", require("./routes/api/notificationRoute"));
+
+app.use("/api/v1/notifications", require("./routes/api/notificationRoute"));
 
 app.use((req, res) => {
   res.status(404).send(path.join(__dirname, "views", "404.html"));
 });
-// just for testing
-const now = new Date();
-const startsAt = new Date(now.getTime() + 60 * 1000);
-const endsAt = new Date(now.getTime() + 180 * 1000);
-console.log(startsAt.toISOString());
-console.log(endsAt.toISOString());
-// just for testing
 
 app.use(errorHandler);
 const startServer = async () => {
