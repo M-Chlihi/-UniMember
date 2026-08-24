@@ -40,7 +40,6 @@ export default function PollResultsPage() {
 
   const poll = pollQuery.data?.data;
   const results = resultsQuery.data?.data;
-  console.log(resultsQuery.data);
   if (!poll || !resultsQuery.data) {
     return (
       <EmptyState

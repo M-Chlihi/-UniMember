@@ -9,7 +9,7 @@ import AppShell from "../components/layout/AppShell";
 import MemberDashboardPage from "../features/dashboard/pages/MemberDashboard";
 import ActivePoll from "../features/polls/pages/ActivePollPage";
 import VotingHistory from "../features/voting/pages/VotingHistoryPage";
-import AdminDashboardPage from "../features/admin/pages/AdminDashboard";
+import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
 import PollDashboardPage from "../features/admin/pages/AdminPollPage";
 import NotificationPage from "../features/notifications/pages/notificationMangement";
 import Forbidden from "../components/feedback/forbedding";

@@ -31,7 +31,7 @@ export default function ActivePollCard({ poll }) {
   return (
     <Card>
       <div className="space-y-6">
-        {/* <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4">
           <Badge variant={variant}>{poll.status}</Badge>
 
           <span className="text-sm text-text-muted">
@@ -39,7 +39,7 @@ export default function ActivePollCard({ poll }) {
               ? `Ends ${new Date(poll.endsAt).toLocaleString()}`
               : null}
           </span>
-        </div> */}
+        </div>
 
         <div>
           <h2 className="text-2xl font-semibold text-text-primary">

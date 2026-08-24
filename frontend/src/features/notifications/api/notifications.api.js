@@ -2,7 +2,6 @@ import apiClient from "../../../api/clientApi";
 
 export const getNotifications = async (params = {}) => {
   const response = await apiClient.get("/notifications", { params });
-
   return response.data;
 };
 
