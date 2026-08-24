@@ -106,7 +106,7 @@ router.get("/:pollId/my-vote", verifyJWT, getMyVote);
 router.get(
   "/:pollId/results",
   verifyJWT,
-  verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
+  verifyRoles(ROLE_NAMES.User, ROLE_NAMES.Admin, ROLE_NAMES.Editor),
   getResults,
 );
 
