@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const ROLES = require("../../config/roles_list");
+const ROLE_NAMES = require("../../config/roleNames");
 const verifyJWT = require("../../middleware/verifyJWT");
 const verifyRoles = require("../../middleware/verifyRoles");
 const validate = require("../../middleware/validation");
@@ -34,45 +34,45 @@ const {
   getMyVote,
   getVotingHistoryController,
 } = require("../../controllers/voteController");
-
-router.get(
-  "/",
-  verifyJWT,
-  verifyRoles(ROLES.Admin, ROLES.Editor),
-  validate(listPollsQuerySchema),
-  getPoll,
-);
-router.get(
-  "/history",
-  verifyJWT,
-  verifyRoles(ROLES.User, ROLES.Editor, ROLES.Admin),
-  validate(historyQuerySchema, "query"),
-  getVotingHistoryController,
-);
 router.get(
   "/active",
   verifyJWT,
-  verifyRoles(ROLES.User, ROLES.Editor, ROLES.Admin),
+  verifyRoles(ROLE_NAMES.User, ROLE_NAMES.Admin),
   getActivePoll,
+);
+router.get(
+  "/",
+  verifyJWT,
+  verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
+  validate(listPollsQuerySchema),
+  getPoll,
+);
+
+router.get(
+  "/history",
+  verifyJWT,
+  verifyRoles(ROLE_NAMES.User, ROLE_NAMES.Editor, ROLE_NAMES.Admin),
+  validate(historyQuerySchema, "query"),
+  getVotingHistoryController,
 );
 
 router.get(
   "/:pollId",
   verifyJWT,
-  verifyRoles(ROLES.User, ROLES.Editor, ROLES.Admin),
+  verifyRoles(ROLE_NAMES.User, ROLE_NAMES.Editor, ROLE_NAMES.Admin),
   getPollById,
 );
 router.post(
   "/",
   verifyJWT,
-  verifyRoles(ROLES.Admin, ROLES.Editor),
+  verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
   validate(createPollSchema),
   createPoll,
 );
 router.patch(
   "/:pollId",
   verifyJWT,
-  verifyRoles(ROLES.Admin, ROLES.Editor),
+  verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
   validate(updatePollSchema),
   updatePollController,
 );
@@ -80,7 +80,7 @@ router.patch(
 router.post(
   "/:pollId/options",
   verifyJWT,
-  verifyRoles(ROLES.Admin, ROLES.Editor),
+  verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
   validate(createPollOptionSchema),
   createPollOption,
 );
@@ -96,7 +96,7 @@ router.post(
 router.post(
   "/:pollId/votes",
   verifyJWT,
-  verifyRoles(ROLES.User, ROLES.Editor, ROLES.Admin),
+  verifyRoles(ROLE_NAMES.User, ROLE_NAMES.Editor, ROLE_NAMES.Admin),
   validate(createVoteSchema),
   castVote,
 );
@@ -106,32 +106,32 @@ router.get("/:pollId/my-vote", verifyJWT, getMyVote);
 router.get(
   "/:pollId/results",
   verifyJWT,
-  verifyRoles(ROLES.Admin, ROLES.Editor),
+  verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
   getResults,
 );
 
 router.post(
   "/:pollId/publish",
   verifyJWT,
-  verifyRoles(ROLES.Admin, ROLES.Editor),
+  verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
   publishPollController,
 );
 router.post(
   "/:pollId/close",
   verifyJWT,
-  verifyRoles(ROLES.Admin, ROLES.Editor),
+  verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
   closePollController,
 );
 router.post(
   "/:pollId/cancel",
   verifyJWT,
-  verifyRoles(ROLES.Admin, ROLES.Editor),
+  verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
   cancelPollController,
 );
 router.post(
   "/:pollId/delete",
   verifyJWT,
-  verifyRoles(ROLES.Admin, ROLES.Editor),
+  verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
   deleteDraftPollController,
 );
 module.exports = router;

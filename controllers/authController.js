@@ -57,15 +57,16 @@ const login = async (req, res) => {
       return res.sendStatus(401);
     }
     // add roles
-    const roles = Object.values(foundUser.roles);
-
+    const roleNames = Object.entries(foundUser.roles)
+      .filter(([, value]) => value)
+      .map(([role]) => role);
     // create JWTs
     const accessToken = jwt.sign(
       {
         UserInfo: {
           id: foundUser._id,
           email: foundUser.email,
-          roles: roles,
+          roles: roleNames,
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
@@ -102,7 +103,7 @@ const login = async (req, res) => {
         id: foundUser._id.toString(),
         username: foundUser.username,
         email: foundUser.email,
-        roles: roles,
+        roles: roleNames,
       },
     });
   } catch (err) {

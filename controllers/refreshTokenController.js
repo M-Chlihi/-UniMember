@@ -17,15 +17,16 @@ const hundleRefreshToken = async (req, res) => {
   // evaluate JWT
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
     if (err || foundUser.email !== decoded.email) return res.sendStatus(403);
-    const roles = Object.values(foundUser.roles);
-
+    const roleNames = Object.entries(foundUser.roles)
+      .filter(([, value]) => value)
+      .map(([role]) => role);
     const accessToken = jwt.sign(
       {
         // UserInfo: { username: foundUser.username, roles: roles },
         UserInfo: {
           id: foundUser._id,
           email: foundUser.email,
-          roles: roles,
+          roles: roleNames,
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
@@ -39,7 +40,7 @@ const hundleRefreshToken = async (req, res) => {
         id: foundUser._id.toString(),
         username: foundUser.username,
         email: foundUser.email,
-        roles,
+        roles: roleNames,
       },
     });
   });

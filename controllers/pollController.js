@@ -104,8 +104,8 @@ const getActivePoll = async (req, res, next) => {
       .lean();
 
     if (!poll) {
-      return res.status(404).json({
-        message: "No active poll",
+      return res.status(200).json({
+        data: null,
       });
     }
 
