@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-
+import { useNavigate } from "react-router-dom";
 import Card from "../../../components/ui/Card";
 import Badge from "../../../components/ui/Badge";
 import Button from "../../../components/ui/Button";
@@ -14,7 +14,7 @@ const statusVariant = {
 
 export default function VotingHistoryCard({ item }) {
   const { poll, myVote } = item;
-
+  const navigate = useNavigate();
   const variant = statusVariant[poll.status] ?? "default";
 
   return (
@@ -49,6 +49,17 @@ export default function VotingHistoryCard({ item }) {
             {myVote.optionTitle}
           </p>
         </div>
+      </div>
+      <div>
+        {poll.status === "CLOSED" && (
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => navigate(`/member/poll/${poll.id}/results`)}
+          >
+            View results
+          </Button>
+        )}
       </div>
     </Card>
   );

@@ -42,7 +42,8 @@ export default function ActivePollPage() {
 
   const poll = pollQuery.data?.data;
   const myVote = myVoteQuery.data?.data;
-
+  console.log(poll);
+  console.log(myVote);
   if (!poll) {
     return (
       <EmptyState

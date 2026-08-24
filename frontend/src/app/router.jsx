@@ -14,6 +14,8 @@ import PollDashboardPage from "../features/admin/pages/AdminPollPage";
 import NotificationPage from "../features/notifications/pages/notificationMangement";
 import Forbidden from "../components/feedback/forbedding";
 import ActivePollPage from "../features/voting/pages/activePollPage";
+import PollResultsPage from "../features/results/pages/pollResutlsPage";
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -49,6 +51,10 @@ export const router = createBrowserRouter([
                   {
                     path: "poll/:pollId",
                     element: <ActivePollPage />,
+                  },
+                  {
+                    path: "poll/:pollId/results",
+                    element: <PollResultsPage />,
                   },
                   {
                     path: "history",
