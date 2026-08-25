@@ -9,8 +9,9 @@ import NotificationHealthCard from "../components/NotificationHealthCard";
 import { useAdminDashboard } from "../hooks/useAdminDashboard";
 
 export default function AdminDashboardPage() {
-  const { polls, activePoll, isLoading, isError, refetch } =
+  const { polls, activePoll, notifications, isLoading, isError, refetch } =
     useAdminDashboard();
+  console.log(notifications);
   if (isLoading) {
     return <LoadingScreen message="Loading admin dashboard..." />;
   }
@@ -26,7 +27,6 @@ export default function AdminDashboardPage() {
   }
 
   const pollItems = polls.data?.data ?? [];
-  console.log(pollItems);
   const counts = {
     draft: pollItems.filter((poll) => poll.status === "DRAFT").length,
 
@@ -71,7 +71,7 @@ export default function AdminDashboardPage() {
 
       <CurrentPollCard poll={activePoll?.data?.poll ?? null} />
 
-      {/* <NotificationHealthCard notifications={notifications?.data ?? []} /> */}
+      <NotificationHealthCard notifications={notifications?.data ?? []} />
     </div>
   );
 }

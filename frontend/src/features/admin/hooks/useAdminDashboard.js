@@ -8,27 +8,36 @@ export const useAdminDashboard = () => {
     limit: 50,
     sort: "-createdAt",
   });
+
   const activePollQuery = useActivePoll();
 
-  // const notificationsQuery = useNotifications({
-  //   page: 1,
-  //   limit: 50,
-  //   sort: "-createdAt",
-  // });
-  // console.log(notificationsQuery);
+  const notificationsQuery = useNotifications({
+    page: 1,
+    limit: 50,
+    sort: "-createdAt",
+  });
 
   return {
     polls: pollsQuery.data,
-
     activePoll: activePollQuery.data,
-    // notifications: notificationsQuery.data,
+    notifications: notificationsQuery.data,
 
-    isLoading: pollsQuery.isLoading || activePollQuery.isLoading,
+    isLoading:
+      pollsQuery.isLoading ||
+      activePollQuery.isLoading ||
+      notificationsQuery.isLoading,
 
-    isError: pollsQuery.isError || activePollQuery.isError,
+    isError:
+      pollsQuery.isError ||
+      activePollQuery.isError ||
+      notificationsQuery.isError,
 
     refetch: async () => {
-      await Promise.all([pollsQuery.refetch(), activePollQuery.refetch()]);
+      await Promise.all([
+        pollsQuery.refetch(),
+        activePollQuery.refetch(),
+        notificationsQuery.refetch(),
+      ]);
     },
   };
 };
