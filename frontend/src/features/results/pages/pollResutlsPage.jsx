@@ -4,7 +4,7 @@ import LoadingScreen from "../../../components/feedback/LoadingScreen";
 import ErrorState from "../../../components/feedback/ErrorState";
 import EmptyState from "../../../components/feedback/EmptyState";
 
-import { usePoll } from "../../polls/hooks/usePoll";
+import { usePollforResults } from "../../polls/hooks/usePoll";
 import { usePollResults } from "../hooks/usePollResults";
 
 import ResultsHeader from "../components/ResultsHeader";
@@ -15,9 +15,9 @@ import TieNotice from "../components/TieNotice";
 export default function PollResultsPage() {
   const { pollId } = useParams();
 
-  const pollQuery = usePoll(pollId);
+  const pollQuery = usePollforResults(pollId);
   const resultsQuery = usePollResults(pollId);
-
+  console.log(pollQuery);
   if (pollQuery.isLoading || resultsQuery.isLoading) {
     return <LoadingScreen message="Loading poll results..." />;
   }
@@ -40,6 +40,7 @@ export default function PollResultsPage() {
 
   const poll = pollQuery.data?.data;
   const results = resultsQuery.data?.data;
+
   if (!poll || !resultsQuery.data) {
     return (
       <EmptyState

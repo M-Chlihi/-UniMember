@@ -11,6 +11,7 @@ import ActivePoll from "../features/polls/pages/ActivePollPage";
 import VotingHistory from "../features/voting/pages/VotingHistoryPage";
 import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
 import AdminPollsPage from "../features/admin/polls/pages/AdminPollsPage";
+import AdminPollDetailsPage from "../features/admin/polls/pages/AdminPollDetailsPage";
 import NotificationPage from "../features/notifications/pages/notificationMangement";
 import Forbidden from "../components/feedback/forbedding";
 import ActivePollPage from "../features/voting/pages/activePollPage";
@@ -75,6 +76,10 @@ export const router = createBrowserRouter([
                   {
                     path: "admin/polls",
                     element: <AdminPollsPage />,
+                  },
+                  {
+                    path: "admin/polls/:pollId",
+                    element: <AdminPollDetailsPage />,
                   },
                   {
                     path: "admin/notifications",
