@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const ROLES = require("../../config/roles_list");
+const ROLE_NAMES = require("../../config/roleNames");
 
 const validate = require("../../middleware/validation");
 const verifyRoles = require("../../middleware/verifyRoles");
@@ -15,7 +15,7 @@ const {
 router.get(
   "/",
   verifyJWT,
-  verifyRoles(ROLES.Admin),
+  verifyRoles(ROLE_NAMES.Admin),
   validate(notificationListQuerySchema, "query"),
   getNotifications,
 );
