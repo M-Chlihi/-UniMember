@@ -14,7 +14,7 @@ export const getAdminPoll = async (pollId) => {
 
 export const createPoll = async (payload) => {
   const response = await apiClient.post("/polls", payload);
-
+  console.log(response.data);
   return response.data;
 };
 
@@ -38,6 +38,12 @@ export const cancelPoll = async (pollId) => {
 
 export const deleteDraftPoll = async (pollId) => {
   const response = await apiClient.delete(`/polls/${pollId}`);
+
+  return response.data;
+};
+
+export const createPollOption = async (pollId, payload) => {
+  const response = await apiClient.post(`/polls/${pollId}/options`, payload);
 
   return response.data;
 };
