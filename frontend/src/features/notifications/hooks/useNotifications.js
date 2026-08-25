@@ -11,12 +11,6 @@ export const useNotifications = (params = {}) => {
 
     placeholderData: (previousData) => previousData,
   });
-  console.log("NOTIFICATION QUERY:", {
-    data: query.data,
-    isLoading: query.isLoading,
-    isFetching: query.isFetching,
-    isError: query.isError,
-    error: query.error,
-  });
+
   return query;
 };

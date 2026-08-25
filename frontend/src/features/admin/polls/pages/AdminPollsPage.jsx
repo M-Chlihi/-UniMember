@@ -16,7 +16,7 @@ export default function AdminPollsPage() {
 
   const [page, setPage] = useState(1);
 
-  const limit = 10;
+  const limit = 5;
 
   const params = useMemo(
     () => ({
@@ -30,7 +30,6 @@ export default function AdminPollsPage() {
 
   const { data, isLoading, isError, error, refetch, isFetching } =
     useAdminPolls(params);
-
   if (isLoading) {
     return <LoadingScreen message="Loading polls..." />;
   }
@@ -47,8 +46,11 @@ export default function AdminPollsPage() {
     );
   }
 
-  const polls = data?.data ?? [];
-  const pagination = data?.pagination;
+  const polls = data.data?.data ?? [];
+  console.log(polls);
+
+  const pagination = data.data?.pagination;
+  console.log(pagination);
 
   return (
     <div className="space-y-8">

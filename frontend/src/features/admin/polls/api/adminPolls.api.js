@@ -1,4 +1,4 @@
-import apiClient from "../../../../api/client";
+import apiClient from "../../../../api/clientApi";
 
 export const getAdminPolls = async (params = {}) => {
   const response = await apiClient.get("/polls", { params });
