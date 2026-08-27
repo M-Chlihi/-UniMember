@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const { now } = require("mongoose");
 
 const listPollsQuerySchema = Joi.object({
   status: Joi.string().valid(
@@ -32,7 +33,7 @@ const createPollSchema = Joi.object({
 
   description: Joi.string().trim().max(1000).allow("", null),
 
-  startsAt: Joi.date().iso().required(),
+  startsAt: Joi.date().iso().greater(new Date(Date.now())).required(),
 
   endsAt: Joi.date().iso().greater(Joi.ref("startsAt")).required(),
 });

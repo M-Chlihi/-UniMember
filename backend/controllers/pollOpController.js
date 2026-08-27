@@ -24,11 +24,11 @@ const createPollOption = async (req, res) => {
       pollId,
     });
 
-    if (optionsCount >= 4) {
-      return res.status(409).json({
-        message: "A poll cannot contain more than 4 options",
-      });
-    }
+    // if (optionsCount >= 4) {
+    //   return res.status(409).json({
+    //     message: "A poll cannot contain more than 4 options",
+    //   });
+    // }
 
     const option = await PollOption.create({
       pollId,
