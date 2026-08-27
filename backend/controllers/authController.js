@@ -89,13 +89,6 @@ const login = async (req, res) => {
 
     await foundUser.save();
 
-    // create JWTs
-    // res.cookie("jwt", refreshToken, {
-    //   httpOnly: true,
-    //   sameSite: "lax",
-    //   secure: process.env.NODE_ENV === "production",
-    //   maxAge: 24 * 60 * 60 * 1000,
-    // });
     res.cookie("jwt", refreshToken, refreshCookieOptions);
     res.json({
       accessToken,

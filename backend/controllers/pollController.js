@@ -122,13 +122,6 @@ const getActivePoll = async (req, res, next) => {
       .select("_id")
       .lean();
 
-    // return res.json({
-    //   poll: {
-    //     ...poll,
-    //     options,
-    //   },
-    //   hasVoted: Boolean(existingVote),
-    // });
     return res.status(200).json({
       data: {
         poll: formatPollDetail(poll),

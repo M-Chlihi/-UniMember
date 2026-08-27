@@ -128,7 +128,7 @@ router.post(
   verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
   cancelPollController,
 );
-router.post(
+router.delete(
   "/:pollId/delete",
   verifyJWT,
   verifyRoles(ROLE_NAMES.Admin, ROLE_NAMES.Editor),
