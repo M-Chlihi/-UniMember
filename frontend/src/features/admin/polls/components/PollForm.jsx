@@ -128,7 +128,7 @@ export default function PollForm({
             </p>
           </div>
 
-          {fields.length < 4 && (
+          {
             <Button
               type="button"
               variant="secondary"
@@ -142,7 +142,7 @@ export default function PollForm({
             >
               Add option
             </Button>
-          )}
+          }
         </div>
 
         <div className="space-y-4">

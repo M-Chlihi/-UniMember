@@ -36,8 +36,7 @@ export const pollFormSchema = z
             .or(z.literal("")),
         }),
       )
-      .min(2, "A poll must contain at least 2 options.")
-      .max(4, "A poll can contain at most 4 options."),
+      .min(2, "A poll must contain at least 2 options."),
   })
   .superRefine((data, ctx) => {
     const start = new Date(data.startsAt);
