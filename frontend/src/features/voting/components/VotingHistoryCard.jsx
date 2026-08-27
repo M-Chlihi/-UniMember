@@ -16,15 +16,22 @@ export default function VotingHistoryCard({ item }) {
   const { poll, myVote } = item;
   const navigate = useNavigate();
   const variant = statusVariant[poll.status] ?? "default";
-
+  const formatDateTime = (value) =>
+    new Intl.DateTimeFormat(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(value));
   return (
     <Card>
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Badge variant={variant}>{poll.status}</Badge>
 
-          <time dateTime={myVote.votedAt} className="text-sm text-text-muted">
+          {/* <time dateTime={myVote.votedAt} className="text-sm text-text-muted">
             {new Date(myVote.votedAt).toLocaleDateString()}
+          </time> */}
+          <time dateTime={myVote.votedAt}>
+            Voted {formatDateTime(myVote.votedAt)}
           </time>
         </div>
 

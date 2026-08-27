@@ -13,8 +13,10 @@ export default function PollOptionCard({
       onClick={() => onSelect(option.id)}
       className={[
         "w-full rounded-lg border p-4 text-left transition",
-        "focus-visible:outline-none focus-visible:ring-2",
-        "focus-visible:ring-primary focus-visible:ring-offset-2",
+        "focus-visible:outline-none",
+        "focus-visible:ring-2",
+        "focus-visible:ring-primary",
+        "focus-visible:ring-offset-2",
 
         selected
           ? "border-primary bg-primary/5"
@@ -29,12 +31,17 @@ export default function PollOptionCard({
       <div className="flex items-start gap-3">
         <div
           className={[
-            "mt-1 size-5 rounded-full border-2",
-            selected ? "border-primary bg-primary" : "border-slate-300",
+            "mt-1 flex size-5 shrink-0 items-center justify-center rounded-full border-2",
+            selected
+              ? "border-primary bg-primary text-white"
+              : "border-slate-300",
           ].join(" ")}
-        />
+          aria-hidden="true"
+        >
+          {selected && <span className="text-xs font-bold">✓</span>}
+        </div>
 
-        <div>
+        <div className="min-w-0">
           <h3 className="font-semibold text-text-primary">{option.title}</h3>
 
           {option.description && (

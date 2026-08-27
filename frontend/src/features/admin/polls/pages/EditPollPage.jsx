@@ -10,7 +10,27 @@ import PollForm from "../components/PollForm";
 
 import { useAdminPoll } from "../hooks/useAdminPoll";
 import { useUpdatePoll } from "../hooks/useUpdatePoll";
+const toLocalDateTimeInput = (value) => {
+  if (!value) {
+    return "";
+  }
 
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const pad = (number) => String(number).padStart(2, "0");
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
 export default function EditPollPage() {
   const { pollId } = useParams();
 
@@ -60,7 +80,8 @@ export default function EditPollPage() {
       // Error shown below.
     }
   };
-
+  console.log(poll.endsAt);
+  console.log(new Date(poll.endsAt));
   return (
     <div className="space-y-8">
       <header>
@@ -84,12 +105,8 @@ export default function EditPollPage() {
           defaultValues={{
             title: poll.title ?? "",
             description: poll.description ?? "",
-            startsAt: poll.startsAt
-              ? new Date(poll.startsAt).toISOString().slice(0, 16)
-              : "",
-            endsAt: poll.endsAt
-              ? new Date(poll.endsAt).toISOString().slice(0, 16)
-              : "",
+            startsAt: poll.startsAt ? toLocalDateTimeInput(poll.startsAt) : "",
+            endsAt: poll.endsAt ? toLocalDateTimeInput(poll.endsAt) : "",
             options:
               poll.options?.map((option) => ({
                 title: option.title ?? "",

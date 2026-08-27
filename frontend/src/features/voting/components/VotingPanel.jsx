@@ -1,42 +1,39 @@
-import { useState } from "react";
-
 import Button from "../../../components/ui/Button";
 import PollOptionCard from "./PollOptionCard";
 
-export default function VotingPanel({ options, onVote, isSubmitting }) {
-  const [selectedOptionId, setSelectedOptionId] = useState(null);
-
-  const handleSubmit = async () => {
-    if (!selectedOptionId) {
-      return;
-    }
-
-    await onVote(selectedOptionId);
-  };
-
+export default function VotingPanel({
+  options,
+  selectedOptionId,
+  onSelect,
+  onSubmit,
+  isSubmitting,
+  hasVoted,
+}) {
   return (
     <div className="space-y-6">
-      <div className="space-y-3">
+      <div className="space-y-3" role="radiogroup" aria-label="Poll options">
         {options.map((option) => (
           <PollOptionCard
             key={option.id}
             option={option}
             selected={selectedOptionId === option.id}
-            disabled={isSubmitting}
-            onSelect={setSelectedOptionId}
+            disabled={hasVoted || isSubmitting}
+            onSelect={onSelect}
           />
         ))}
       </div>
 
-      <Button
-        fullWidth
-        size="lg"
-        disabled={!selectedOptionId}
-        loading={isSubmitting}
-        onClick={handleSubmit}
-      >
-        Submit vote
-      </Button>
+      {!hasVoted && (
+        <Button
+          fullWidth
+          size="lg"
+          disabled={!selectedOptionId}
+          loading={isSubmitting}
+          onClick={onSubmit}
+        >
+          Submit vote
+        </Button>
+      )}
     </div>
   );
 }
