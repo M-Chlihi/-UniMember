@@ -40,7 +40,7 @@ export default function PollResultsPage() {
 
   const poll = pollQuery.data?.data;
   const results = resultsQuery.data?.data;
-
+  console.log(resultsQuery.data);
   if (!poll || !resultsQuery.data) {
     return (
       <EmptyState
@@ -63,7 +63,9 @@ export default function PollResultsPage() {
     <div className="space-y-8">
       <ResultsHeader poll={poll} results={resultsQuery.data} />
 
-      {resultsQuery.data.tie && <TieNotice />}
+      {resultsQuery.data.tie && (
+        <TieNotice winners={resultsQuery.data.winners} />
+      )}
 
       {resultsQuery.data.winner && !resultsQuery.data.isTie && (
         <WinnerCard winner={resultsQuery.data.winner} />

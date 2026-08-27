@@ -37,8 +37,9 @@ export const cancelPoll = async (pollId) => {
 };
 
 export const deleteDraftPoll = async (pollId) => {
-  const response = await apiClient.delete(`/polls/${pollId}`);
-
+  const response = await apiClient.delete(`/polls/${pollId}/delete`);
+  console.log(response);
+  console.log(response.data);
   return response.data;
 };
 

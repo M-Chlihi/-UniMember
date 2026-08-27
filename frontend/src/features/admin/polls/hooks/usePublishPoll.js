@@ -10,7 +10,7 @@ export const usePublishPoll = () => {
   return useMutation({
     mutationFn: publishPoll,
 
-    onSuccess: (data, pollId) => {
+    onSuccess: (_data, pollId) => {
       queryClient.invalidateQueries({
         queryKey: adminPollKeys.lists(),
       });

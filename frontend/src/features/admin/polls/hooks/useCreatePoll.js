@@ -8,6 +8,7 @@ export const useCreatePoll = () => {
 
   return useMutation({
     mutationFn: async ({ title, description, startsAt, endsAt, options }) => {
+      console.log("CREATE POLL MUTATION START", Date.now());
       const pollResponse = await createPoll({
         title,
         description,

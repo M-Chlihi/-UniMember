@@ -13,5 +13,6 @@ export const useActivePoll = () => {
     staleTime: 30_000,
 
     retry: 1,
+    refetchIntervalInBackground: false,
   });
 };

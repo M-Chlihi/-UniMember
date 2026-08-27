@@ -7,7 +7,7 @@ import LoadingScreen from "../../../components/feedback/LoadingScreen";
 import ErrorState from "../../../components/feedback/ErrorState";
 import EmptyState from "../../../components/feedback/EmptyState";
 
-import { usePoll } from "../../polls/hooks/usePoll";
+import { usePollforResults } from "../../polls/hooks/usePoll";
 import { useMyVote } from "../hooks/useMyVote";
 import { useCastVote } from "../hooks/useCastVote";
 
@@ -17,7 +17,7 @@ import VoteSuccess from "../components/VoteSucess";
 export default function ActivePollPage() {
   const { pollId } = useParams();
 
-  const pollQuery = usePoll(pollId);
+  const pollQuery = usePollforResults(pollId);
 
   const myVoteQuery = useMyVote(pollId);
 
@@ -26,7 +26,8 @@ export default function ActivePollPage() {
   if (pollQuery.isLoading || myVoteQuery.isLoading) {
     return <LoadingScreen message="Loading poll..." />;
   }
-
+  console.log(pollQuery);
+  // console.log(myVoteQuery);
   if (pollQuery.isError || myVoteQuery.isError) {
     return (
       <ErrorState

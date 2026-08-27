@@ -11,7 +11,6 @@ import { useAdminDashboard } from "../hooks/useAdminDashboard";
 export default function AdminDashboardPage() {
   const { polls, activePoll, notifications, isLoading, isError, refetch } =
     useAdminDashboard();
-  console.log(notifications);
   if (isLoading) {
     return <LoadingScreen message="Loading admin dashboard..." />;
   }
@@ -69,7 +68,7 @@ export default function AdminDashboardPage() {
         <AdminStatCard label="Closed polls" value={counts.closed} />
       </section>
 
-      <CurrentPollCard poll={activePoll?.data?.poll ?? null} />
+      <CurrentPollCard poll={activePoll.data?.data?.poll ?? null} />
 
       <NotificationHealthCard notifications={notifications?.data ?? []} />
     </div>

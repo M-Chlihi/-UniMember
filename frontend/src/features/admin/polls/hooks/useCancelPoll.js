@@ -10,7 +10,7 @@ export const useCancelPoll = () => {
   return useMutation({
     mutationFn: cancelPoll,
 
-    onSuccess: (data, pollId) => {
+    onSuccess: (_data, pollId) => {
       queryClient.invalidateQueries({
         queryKey: adminPollKeys.lists(),
       });

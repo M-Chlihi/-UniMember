@@ -5,20 +5,33 @@ import ErrorState from "../../../../components/feedback/ErrorState";
 
 import PollForm from "../components/PollForm";
 import { useCreatePoll } from "../hooks/useCreatePoll";
-
+import { useRef } from "react";
 export default function CreatePollPage() {
   const navigate = useNavigate();
 
   const mutation = useCreatePoll();
   // console.log(mutation);
+  const submitLock = useRef(false);
 
   const handleSubmit = async (formData) => {
+    console.log("CREATE POLL SUBMIT START", Date.now());
+
+    if (submitLock.current) {
+      console.warn("CREATE POLL BLOCKED — already submitting");
+      return;
+    }
+
+    submitLock.current = true;
     try {
-      await mutation.mutateAsync(formData);
-      console.log(await mutation.mutateAsync(formData));
+      const result = await mutation.mutateAsync(formData);
+
+      console.log("CREATE POLL SUCCESS", result);
+
       navigate("/admin/polls");
     } catch (err) {
-      console.log(err);
+      console.error("CREATE POLL FAILED", err);
+
+      submitLock.current = false;
     }
   };
 
