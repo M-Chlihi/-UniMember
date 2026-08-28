@@ -1,4 +1,7 @@
 const { listNotifications } = require("../services/notificationAdmin.service");
+const {
+  getNotificationSummary,
+} = require("../services/notificationAdminService");
 
 const getNotifications = async (req, res, next) => {
   try {
@@ -10,6 +13,18 @@ const getNotifications = async (req, res, next) => {
   }
 };
 
+const getNotificationSummaryController = async (req, res, next) => {
+  try {
+    const result = await getNotificationSummary(req.query);
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   getNotifications,
+  getNotificationSummaryController,
 };

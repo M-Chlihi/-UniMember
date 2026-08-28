@@ -1,5 +1,4 @@
 // services/notification.service.js
-
 const Notification = require("../models/Notification");
 
 const {
@@ -14,15 +13,25 @@ const {
 } = require("../utils/retryPolicy");
 
 const { getPollResults } = require("./vote.service");
-
 const { buildPollResultEmail } = require("./notificationContent.service");
 
 const { sendEmail } = require("./provider/email.provider");
 
-const createPollResultNotification = async ({ poll, recipientId }) => {
-  const notification = await Notification.create({
-    pollId: poll._id,
-    recipientId,
+const User = require("../models/User");
+
+const createPollResultNotifications = async ({ pollId }) => {
+  const users = await User.find({}).select("_id").lean();
+
+  if (!users.length) {
+    return {
+      created: 0,
+      skipped: 0,
+    };
+  }
+
+  const notifications = users.map((user) => ({
+    pollId,
+    recipientId: user._id,
 
     type: NOTIFICATION_TYPE.POLL_RESULT,
 
@@ -31,9 +40,42 @@ const createPollResultNotification = async ({ poll, recipientId }) => {
     status: NOTIFICATION_STATUS.PENDING,
 
     attempts: 0,
-  });
+  }));
 
-  return notification;
+  try {
+    const created = await Notification.insertMany(notifications, {
+      ordered: false,
+    });
+
+    return {
+      created: created.length,
+      skipped: notifications.length - created.length,
+    };
+  } catch (err) {
+    /*
+      Because the Notification collection has:
+
+      unique(
+        pollId,
+        recipientId,
+        type,
+        channel
+      )
+
+      duplicate deliveries are rejected by MongoDB.
+
+      With ordered:false, valid records are still inserted.
+    */
+
+    if (err.code === 11000) {
+      return {
+        created: err.insertedDocs?.length ?? 0,
+        skipped: notifications.length - (err.insertedDocs?.length ?? 0),
+      };
+    }
+
+    throw err;
+  }
 };
 
 const deliverClaimedNotification = async (notification) => {
@@ -105,6 +147,6 @@ const deliverClaimedNotification = async (notification) => {
 };
 
 module.exports = {
-  createPollResultNotification,
+  createPollResultNotifications,
   deliverClaimedNotification,
 };

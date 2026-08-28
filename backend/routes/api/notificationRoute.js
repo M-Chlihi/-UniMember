@@ -11,6 +11,7 @@ const {
 } = require("../../validation/notificationSchema");
 const {
   getNotifications,
+  getNotificationSummaryController,
 } = require("../../controllers/notificationController");
 router.get(
   "/",
@@ -19,5 +20,11 @@ router.get(
   validate(notificationListQuerySchema, "query"),
   getNotifications,
 );
-
+router.get(
+  "/summary",
+  verifyJWT,
+  verifyRoles(ROLE_NAMES.Admin),
+  validate(notificationListQuerySchema, "query"),
+  getNotificationSummaryController,
+);
 module.exports = router;

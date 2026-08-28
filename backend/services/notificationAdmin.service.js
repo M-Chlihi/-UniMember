@@ -1,6 +1,8 @@
 const Notification = require("../models/Notification");
 
 const listNotifications = async ({
+  pollId,
+
   status,
   channel,
   type,
@@ -10,6 +12,9 @@ const listNotifications = async ({
 }) => {
   const query = {};
 
+  if (pollId) {
+    query.pollId = pollId;
+  }
   if (status) query.status = status;
   if (channel) query.channel = channel;
   if (type) query.type = type;

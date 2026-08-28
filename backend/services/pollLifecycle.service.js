@@ -1,6 +1,6 @@
 const Poll = require("../models/Poll");
 const PollOption = require("../models/PollOption");
-const { createPollResultNotification } = require("./notification.service");
+const { createPollResultNotifications } = require("./notification.service");
 const { getPollResults } = require("./vote.service");
 const publishPoll = async (pollId) => {
   const poll = await Poll.findById(pollId).exec();
@@ -97,21 +97,30 @@ const transitionOpenPolls = async () => {
     endsAt: {
       $lte: now,
     },
-  })
-    .populate("createdBy", "email username")
-    .exec();
+  }).exec();
 
+  // for (const poll of polls) {
+  //   poll.status = "CLOSED";
+
+  //   await poll.save();
+
+  //   await getPollResults(poll._id);
+
+  //   await createPollResultNotifications({
+  //     pollId: poll._id,
+  //   });
+  // }
   for (const poll of polls) {
-    poll.status = "CLOSED";
+    try {
+      poll.status = "CLOSED";
+      await poll.save();
 
-    await poll.save();
-
-    const results = await getPollResults(poll._id);
-
-    await createPollResultNotification({
-      poll,
-      recipientId: poll.createdBy._id,
-    });
+      await createPollResultNotifications({
+        pollId: poll._id,
+      });
+    } catch (err) {
+      console.error(`Failed closing/announcing poll ${poll._id}:`, err);
+    }
   }
 };
 
