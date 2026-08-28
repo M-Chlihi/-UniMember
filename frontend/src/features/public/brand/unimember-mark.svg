@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 180" role="img" aria-labelledby="title desc">
+  <title id="title">UniMember mark</title>
+  <desc id="desc">Three rising bars with a curved upward arrow.</desc>
+  <defs>
+    <linearGradient id="uniBrand" x1="30" y1="140" x2="220" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5046E4"/>
+      <stop offset="1" stop-color="#7B3BEA"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#uniBrand)">
+    <rect x="48" y="78" width="34" height="54" rx="7"/>
+    <rect x="90" y="50" width="34" height="82" rx="7"/>
+    <rect x="132" y="22" width="34" height="110" rx="7"/>
+  </g>
+  <path d="M36 135 C57 159 93 164 136 150 C165 141 191 124 210 105"
+        fill="none" stroke="url(#uniBrand)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M205 91 L226 98 L214 118 Z" fill="url(#uniBrand)"/>
+</svg>

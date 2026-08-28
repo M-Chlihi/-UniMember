@@ -1,6 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "./App";
+
 import { ROLES } from "../features/auth/constants/roles";
+import App from "./App";
+import LandingPage from "../features/public/pages/LandingPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import RequireAuth from "../features/auth/componenets/RequireAuth";
@@ -25,6 +27,10 @@ export const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
       {
         path: "login",
         element: <LoginPage />,
@@ -89,7 +95,7 @@ export const router = createBrowserRouter([
                     element: <AdminPollDetailsPage />,
                   },
                   {
-                    path: "/admin/polls/:pollId/edit",
+                    path: "admin/polls/:pollId/edit",
                     element: <EditPollPage />,
                   },
                   {

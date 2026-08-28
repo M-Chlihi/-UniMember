@@ -12,11 +12,7 @@ import {
   refresh as refreshRequest,
 } from "../api/auth.api";
 
-import {
-  clearAccessToken,
-  getAccessToken,
-  setAccessToken,
-} from "../utils/tokenStore";
+import { clearAccessToken, setAccessToken } from "../utils/tokenStore";
 
 export const AuthContext = createContext(null);
 
@@ -27,66 +23,86 @@ export function AuthProvider({ children }) {
 
   const [accessToken, setAccessTokenState] = useState(null);
 
-  const storeAccessToken = (token) => {
-    setAccessToken(token);
-    setAccessTokenState(token);
-  };
-  const login = useCallback(async (credentials) => {
-    const data = await loginRequest(credentials);
-
+  const storeSession = useCallback((data) => {
     setAccessToken(data.accessToken);
 
-    setUser(data.user);
+    setAccessTokenState(data.accessToken);
 
-    return data;
+    setUser(data.user);
   }, []);
+
+  const clearSession = useCallback(() => {
+    clearAccessToken();
+    setAccessTokenState(null);
+    setUser(null);
+  }, []);
+
+  const login = useCallback(
+    async (credentials) => {
+      const data = await loginRequest(credentials);
+
+      storeSession(data);
+
+      return data;
+    },
+    [storeSession],
+  );
 
   const refresh = useCallback(async () => {
     const data = await refreshRequest();
 
-    storeAccessToken(data.accessToken);
-
-    setUser(data.user);
+    storeSession(data);
 
     return data;
-  }, []);
+  }, [storeSession]);
 
   const logout = useCallback(async () => {
     try {
       await logoutRequest();
     } finally {
-      clearAccessToken();
-      setAccessTokenState(null);
-      setUser(null);
+      clearSession();
     }
-  }, []);
+  }, [clearSession]);
 
   useEffect(() => {
+    let mounted = true;
+
     const initializeAuth = async () => {
       try {
-        await refresh();
+        const data = await refreshRequest();
+
+        if (mounted) {
+          storeSession(data);
+        }
       } catch {
-        clearAccessToken();
-        setUser(null);
+        if (mounted) {
+          clearSession();
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     initializeAuth();
-  }, [refresh]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [storeSession, clearSession]);
 
   const value = useMemo(
     () => ({
       user,
       loading,
-      accessToken: getAccessToken(),
-      isAuthenticated: Boolean(getAccessToken()),
+      accessToken,
+      isAuthenticated: Boolean(accessToken),
       login,
       refresh,
       logout,
     }),
-    [user, loading, login, refresh, logout],
+    [user, loading, accessToken, login, refresh, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

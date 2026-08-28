@@ -1,81 +1,119 @@
 import { useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
+import LoginForm from "../componenets/loginForm";
 
 export default function LoginPage() {
   const navigate = useNavigate();
 
+  const location = useLocation();
+
   const { login } = useAuth();
-
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState("");
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  const [submitting, setSubmitting] = useState(false);
 
-    setForm((current) => ({
-      ...current,
-      [name]: value,
-    }));
-  };
+  const from = location.state?.from?.pathname;
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    setLoading(true);
+  const handleSubmit = async (credentials) => {
+    setSubmitting(true);
     setError("");
 
     try {
-      const data = await login(form);
+      const data = await login(credentials);
 
       const roles = data.user?.roles ?? [];
 
       if (roles.includes("Admin")) {
-        navigate("/admin");
-      } else {
-        navigate("/member");
+        navigate("/admin", {
+          replace: true,
+        });
+
+        return;
       }
+
+      if (roles.includes("Editor")) {
+        navigate("/admin", {
+          replace: true,
+        });
+
+        return;
+      }
+
+      if (from) {
+        navigate(from, {
+          replace: true,
+        });
+
+        return;
+      }
+      const canAccessAdmin =
+        roles.includes("Admin") || roles.includes("Editor");
+
+      if (from?.startsWith("/admin") && canAccessAdmin) {
+        navigate(from, {
+          replace: true,
+        });
+
+        return;
+      }
+
+      if (canAccessAdmin) {
+        navigate("/admin", {
+          replace: true,
+        });
+
+        return;
+      }
+      navigate("/member", {
+        replace: true,
+      });
     } catch (err) {
-      setError(err.response?.data?.message || "Unable to sign in");
+      setError(
+        err.response?.data?.message ||
+          "Unable to sign in. Please check your credentials and try again.",
+      );
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Welcome back</h1>
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+      <section className="w-full max-w-md">
+        <div className="rounded-xl border border-border bg-surface p-6 shadow-card sm:p-8">
+          <div className="mb-8">
+            <p className="text-sm font-medium text-primary"> Sign in</p>
 
-      <input
-        name="email"
-        value={form.email}
-        onChange={handleChange}
-        placeholder="email"
-        autoComplete="email"
-      />
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-text-primary">
+              Welcome back
+            </h1>
 
-      <input
-        name="password"
-        type="password"
-        value={form.password}
-        onChange={handleChange}
-        placeholder="Password"
-        autoComplete="current-password"
-      />
+            <p className="mt-2 text-sm text-text-secondary">
+              Sign in to continue to the club platform.
+            </p>
+          </div>
 
-      {error && <p>{error}</p>}
+          <LoginForm
+            onSubmit={handleSubmit}
+            submitting={submitting}
+            error={error}
+          />
 
-      <button type="submit" disabled={loading}>
-        {loading ? "Signing in..." : "Sign in"}
-      </button>
-    </form>
+          <p className="mt-6 text-center text-sm text-text-secondary">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="font-medium text-primary hover:underline"
+            >
+              Create one
+            </Link>
+          </p>
+        </div>
+      </section>
+    </main>
   );
 }
