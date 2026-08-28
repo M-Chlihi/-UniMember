@@ -1,14 +1,9 @@
 export const adminNotificationKeys = {
   all: ["admin", "notifications"],
 
-  lists: () => [...adminNotificationKeys.all, "list"],
+  history: (params) => [...adminNotificationKeys.all, "history", params],
 
-  list: (params) => [...adminNotificationKeys.lists(), params],
+  summary: (params) => [...adminNotificationKeys.all, "summary", params],
 
-  details: () => [...adminNotificationKeys.all, "detail"],
-
-  detail: (notificationId) => [
-    ...adminNotificationKeys.details(),
-    notificationId,
-  ],
+  detail: (id) => [...adminNotificationKeys.all, "detail", id],
 };

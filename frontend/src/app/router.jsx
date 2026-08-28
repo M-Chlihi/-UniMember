@@ -14,7 +14,8 @@ import AdminPollsPage from "../features/admin/polls/pages/AdminPollsPage";
 import AdminPollDetailsPage from "../features/admin/polls/pages/AdminPollDetailsPage";
 import CreatePollPage from "../features/admin/polls/pages/CreatePollPage";
 import EditPollPage from "../features/admin/polls/pages/EditPollPage";
-import NotificationPage from "../features/notifications/pages/notificationMangement";
+import AdminNotificationsPage from "../features/notifications/pages/notificationMangement";
+import NotificationDeliveryPage from "../features/notifications/pages/notificationDeliveryPage";
 import Forbidden from "../components/feedback/forbedding";
 import ActivePollPage from "../features/voting/pages/activePollPage";
 import PollResultsPage from "../features/results/pages/pollResutlsPage";
@@ -93,7 +94,11 @@ export const router = createBrowserRouter([
                   },
                   {
                     path: "admin/notifications",
-                    element: <NotificationPage />,
+                    element: <AdminNotificationsPage />,
+                  },
+                  {
+                    path: "admin/notifications/:pollId",
+                    element: <NotificationDeliveryPage />,
                   },
                 ],
               },
