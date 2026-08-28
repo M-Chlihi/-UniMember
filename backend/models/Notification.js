@@ -87,5 +87,10 @@ notificationSchema.index(
     unique: true,
   },
 );
-
+notificationSchema.index({
+  pollId: 1,
+  type: 1,
+  channel: 1,
+  createdAt: -1,
+});
 module.exports = mongoose.model("Notification", notificationSchema);

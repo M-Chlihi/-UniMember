@@ -8,11 +8,23 @@ const verifyJWT = require("../../middleware/verifyJWT");
 
 const {
   notificationListQuerySchema,
+  notificationHistoryQuerySchema,
+
+  notificationSummaryQuerySchema,
 } = require("../../validation/notificationSchema");
 const {
   getNotifications,
   getNotificationSummaryController,
+  getNotificationHistoryController,
 } = require("../../controllers/notificationController");
+router.get(
+  "/history",
+  verifyJWT,
+  verifyRoles(ROLE_NAMES.Admin),
+  validate(notificationHistoryQuerySchema, "query"),
+  getNotificationHistoryController,
+);
+
 router.get(
   "/",
   verifyJWT,
