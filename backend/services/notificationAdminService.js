@@ -1,10 +1,32 @@
+const mongoose = require("mongoose");
+const Notification = require("../models/Notification");
 const { NOTIFICATION_STATUS } = require("../utils/notificationConstantes");
-const getNotificationSummary = async ({ pollId, type, channel }) => {
-  const match = {
-    pollId,
-    type,
-    channel,
-  };
+
+const getNotificationSummary = async ({ pollId, type, channel } = {}) => {
+  const match = {};
+
+  // Add filters only when they were actually provided.
+  if (pollId) {
+    if (!mongoose.Types.ObjectId.isValid(pollId)) {
+      const error = new Error("Invalid pollId");
+
+      error.statusCode = 400;
+
+      throw error;
+    }
+
+    match.pollId = new mongoose.Types.ObjectId(pollId);
+  }
+
+  if (type) {
+    match.type = type;
+  }
+
+  if (channel) {
+    match.channel = channel;
+  }
+
+  console.log("Notification summary match:", match);
 
   const summary = await Notification.aggregate([
     {
@@ -14,6 +36,7 @@ const getNotificationSummary = async ({ pollId, type, channel }) => {
     {
       $group: {
         _id: "$status",
+
         count: {
           $sum: 1,
         },
@@ -51,5 +74,15 @@ const getNotificationSummary = async ({ pollId, type, channel }) => {
     }
   }
 
+  counts.deliveryRate =
+    counts.total > 0
+      ? Number(((counts.sent / counts.total) * 100).toFixed(2))
+      : 0;
+
+  console.log("Notification summary:", counts);
   return counts;
+};
+
+module.exports = {
+  getNotificationSummary,
 };

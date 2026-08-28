@@ -94,6 +94,187 @@ const listNotifications = async ({
   };
 };
 
+const getNotificationHistory = async ({
+  type,
+  channel,
+  page = 1,
+  limit = 20,
+}) => {
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const match = {};
+
+  if (type) {
+    match.type = type;
+  }
+
+  if (channel) {
+    match.channel = channel;
+  }
+
+  const pipeline = [
+    {
+      $match: match,
+    },
+
+    {
+      $group: {
+        _id: {
+          pollId: "$pollId",
+          type: "$type",
+          channel: "$channel",
+        },
+
+        total: {
+          $sum: 1,
+        },
+
+        sent: {
+          $sum: {
+            $cond: [{ $eq: ["$status", "SENT"] }, 1, 0],
+          },
+        },
+
+        pending: {
+          $sum: {
+            $cond: [
+              {
+                $eq: ["$status", "PENDING"],
+              },
+              1,
+              0,
+            ],
+          },
+        },
+
+        processing: {
+          $sum: {
+            $cond: [
+              {
+                $eq: ["$status", "PROCESSING"],
+              },
+              1,
+              0,
+            ],
+          },
+        },
+
+        failed: {
+          $sum: {
+            $cond: [
+              {
+                $eq: ["$status", "FAILED"],
+              },
+              1,
+              0,
+            ],
+          },
+        },
+
+        createdAt: {
+          $min: "$createdAt",
+        },
+      },
+    },
+
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+
+    {
+      $facet: {
+        data: [
+          {
+            $skip: skip,
+          },
+
+          {
+            $limit: limitNumber,
+          },
+
+          {
+            $lookup: {
+              from: "polls",
+              localField: "_id.pollId",
+              foreignField: "_id",
+              as: "poll",
+            },
+          },
+
+          {
+            $unwind: {
+              path: "$poll",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+
+          {
+            $project: {
+              _id: 0,
+
+              pollId: {
+                $toString: "$_id.pollId",
+              },
+
+              pollTitle: {
+                $ifNull: ["$poll.title", null],
+              },
+
+              type: "$_id.type",
+
+              channel: "$_id.channel",
+
+              total: 1,
+
+              sent: 1,
+
+              pending: 1,
+
+              processing: 1,
+
+              failed: 1,
+
+              createdAt: 1,
+            },
+          },
+        ],
+
+        metadata: [
+          {
+            $count: "total",
+          },
+        ],
+      },
+    },
+  ];
+
+  const [result] = await Notification.aggregate(pipeline);
+
+  const data = result?.data ?? [];
+
+  const total = result?.metadata?.[0]?.total ?? 0;
+
+  const totalPages = Math.ceil(total / limitNumber);
+
+  return {
+    data,
+    pagination: {
+      page: pageNumber,
+      limit: limitNumber,
+      total,
+      totalPages,
+      hasNextPage: pageNumber < totalPages,
+      hasPreviousPage: pageNumber > 1,
+    },
+  };
+};
+
 module.exports = {
   listNotifications,
+  getNotificationHistory,
 };
