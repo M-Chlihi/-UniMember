@@ -10,11 +10,11 @@ const register = async (req, res) => {
 
   try {
     const duplicate = await User.findOne({
-      $or: [{ username }, { email }],
+      $or: [{ email }],
     }).exec();
     if (duplicate) {
       return res.status(409).json({
-        message: "Username or email already exists",
+        message: " email already exist",
       });
     } // conflict
 

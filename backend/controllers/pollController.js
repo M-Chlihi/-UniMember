@@ -133,7 +133,23 @@ const getActivePoll = async (req, res, next) => {
     next(err);
   }
 };
+const getOpenPolls = async (req, res, next) => {
+  try {
+    const polls = await Poll.find({
+      status: "OPEN",
+    })
+      .sort({
+        startsAt: -1,
+      })
+      .lean();
 
+    return res.status(200).json({
+      data: polls.map(formatPollDetail),
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 const updatePollController = async (req, res, next) => {
   try {
     const poll = await updatePoll(req.params.pollId, req.body);
@@ -169,4 +185,5 @@ module.exports = {
   deleteDraftPollController,
   getPoll,
   getPollById,
+  getOpenPolls,
 };

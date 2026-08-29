@@ -26,6 +26,7 @@ const {
   updatePollController,
   cancelPollController,
   deleteDraftPollController,
+  getOpenPolls,
 } = require("../../controllers/pollController");
 const { createPollOption } = require("../../controllers/pollOpController");
 const {
@@ -37,8 +38,14 @@ const {
 router.get(
   "/active",
   verifyJWT,
-  verifyRoles(ROLE_NAMES.User, ROLE_NAMES.Admin),
+  verifyRoles(ROLE_NAMES.User, ROLE_NAMES.Editor, ROLE_NAMES.Admin),
   getActivePoll,
+);
+router.get(
+  "/open",
+  verifyJWT,
+  verifyRoles(ROLE_NAMES.User, ROLE_NAMES.Editor, ROLE_NAMES.Admin),
+  getOpenPolls,
 );
 router.get(
   "/",
