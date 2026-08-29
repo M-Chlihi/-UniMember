@@ -14,7 +14,6 @@ export default function AdminDashboardPage() {
   if (isLoading) {
     return <LoadingScreen message="Loading admin dashboard..." />;
   }
-
   if (isError) {
     return (
       <ErrorState
@@ -67,10 +66,24 @@ export default function AdminDashboardPage() {
 
         <AdminStatCard label="Closed polls" value={counts.closed} />
       </section>
-
-      <CurrentPollCard poll={activePoll.data?.data?.poll ?? null} />
+      {activePoll?.poll ? (
+        <CurrentPollCard poll={activePoll.poll ?? null} />
+      ) : (
+        <EmptyState
+          title="No active poll"
+          message="There isn't a course vote open right now."
+        />
+      )}
 
       <NotificationHealthCard notifications={notifications?.data ?? []} />
     </div>
   );
 }
+
+// activePoll?.poll;
+
+// <ActivePollCard
+//   poll={activePoll.poll}
+// />
+// : activePoll?.poll ? (
+//         <ActivePollCard poll={activePoll.poll} />

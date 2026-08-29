@@ -19,7 +19,7 @@ export const useAdminDashboard = () => {
 
   return {
     polls: pollsQuery.data,
-    activePoll: activePollQuery.data,
+    activePoll: activePollQuery.data?.data,
     notifications: notificationsQuery.data,
 
     isLoading:

@@ -49,7 +49,7 @@ export default function ProductPreview() {
           </div>
 
           <div className="hidden rounded-full border border-border bg-surface px-4 py-1.5 text-[10px] text-text-muted sm:block">
-            club-platform.local/poll
+            app.unimember
           </div>
 
           <div className="size-6 rounded-full bg-slate-100" />

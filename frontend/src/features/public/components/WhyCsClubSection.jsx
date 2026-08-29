@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import SectionLabel from "./SectionLabel";
-
+import BrandMark from "../brand/BrandMark";
 const principles = [
   {
     number: "01",
@@ -31,7 +31,7 @@ export default function WhyCsClubSection() {
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24">
           <div>
-            <SectionLabel>Why CS Club</SectionLabel>
+            <SectionLabel>Why UniMember</SectionLabel>
 
             <motion.h2
               initial={{
@@ -56,7 +56,7 @@ export default function WhyCsClubSection() {
 
             <p className="mt-6 max-w-lg text-sm leading-7 text-white/55 sm:text-base">
               The platform brings the club's participation process into one
-              clear experience — from creating the question to sharing the final
+              clear experience : from creating the question to sharing the final
               result.
             </p>
           </div>

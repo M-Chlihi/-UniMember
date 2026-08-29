@@ -29,13 +29,23 @@ export default function CTASection() {
           Join the conversation
         </p>
 
-        <h2 className="mx-auto mt-5 max-w-3xl font-serif text-4xl leading-tight tracking-[-0.03em] sm:text-5xl lg:text-6xl">
-          Your next decision can start with your vote.
+        <h2
+          className="
+    mx-auto
+    max-w-4xl
+    font-serif
+    text-[clamp(2.75rem,6vw,5.5rem)]
+    leading-[0.95]
+    tracking-[-0.04em]
+  "
+        >
+          Your next decision can start with your{" "}
+          <span className="italic text-white/70">vote.</span>
         </h2>
 
         <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-white/55 sm:text-base">
-          Join the CS Club platform and take part in the decisions that shape
-          what the community learns and does next.
+          Join UniMember platform and take part in the decisions that shape what
+          the community learns and does next.
         </p>
 
         <div className="mt-8">

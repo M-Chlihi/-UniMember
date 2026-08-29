@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../../../components/ui/Button";
 import ConfirmDialog from "../../../../components/ui/ConfirmDialog";
 import ErrorState from "../../../../components/feedback/ErrorState";
+import { PERMISSIONS } from "../../../auth/constants/permissions";
 
 import { usePublishPoll } from "../hooks/usePublishPoll";
 import { useCancelPoll } from "../hooks/useCancelPoll";
 import { useDeleteDraftPoll } from "../hooks/useDeleteDraftPoll";
+import Can from "../../../auth/componenets/Can";
 
 export default function PollDetailsActions({ poll }) {
   const navigate = useNavigate();
@@ -58,21 +60,24 @@ export default function PollDetailsActions({ poll }) {
     <>
       <div className="flex flex-wrap gap-3">
         {(poll.status === "DRAFT" || poll.status === "SCHEDULED") && (
-          <Button
-            variant="secondary"
-            onClick={() => navigate(`/admin/polls/${poll.id}/edit`)}
-          >
-            Edit poll
-          </Button>
+          <Can permission={PERMISSIONS.POLL_EDIT}>
+            <Button
+              variant="secondary"
+              onClick={() => navigate(`/admin/polls/${poll.id}/edit`)}
+            >
+              Edit poll
+            </Button>
+          </Can>
         )}
 
         {poll.status === "DRAFT" && (
           <>
             <Button onClick={() => setDialog("publish")}>Publish</Button>
-
-            <Button variant="danger" onClick={() => setDialog("delete")}>
-              Delete draft
-            </Button>
+            <Can permission={PERMISSIONS.POLL_PUBLISH}>
+              <Button variant="danger" onClick={() => setDialog("delete")}>
+                Delete draft
+              </Button>
+            </Can>
           </>
         )}
 

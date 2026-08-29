@@ -84,7 +84,7 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <section className="w-full max-w-md">
-        <div className="rounded-xl border border-border bg-surface p-6 shadow-card sm:p-8">
+        <div className="rounded-xl  border-border bg-surface p-6   sm:p-8">
           <div className="mb-8">
             <p className="text-sm font-medium text-primary"> Sign in</p>
 
@@ -93,7 +93,7 @@ export default function LoginPage() {
             </h1>
 
             <p className="mt-2 text-sm text-text-secondary">
-              Sign in to continue to the club platform.
+              Sign in to continue to University Clubs community.
             </p>
           </div>
 
@@ -110,6 +110,14 @@ export default function LoginPage() {
               className="font-medium text-primary hover:underline"
             >
               Create one
+            </Link>
+          </p>
+          <p className="mt-6 text-center text-sm text-text-secondary">
+            <Link
+              to="/"
+              className="mt-4 inline-flex text-sm text-text-muted hover:text-text-primary"
+            >
+              ← Back to UniMember
             </Link>
           </p>
         </div>

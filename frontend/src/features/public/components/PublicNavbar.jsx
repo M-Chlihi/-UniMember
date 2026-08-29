@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowUpRight, ChevronRight, Menu, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  ChevronRight,
+  Menu,
+  LayoutDashboard,
+  X,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import BrandLogo from "../brand/BrandLogo";
+import { useAuth } from "../../auth/hooks/useAuth";
 export default function PublicNavbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
+  const { loading, isAuthenticated, user } = useAuth();
   const shouldReduceMotion = useReducedMotion();
+  const canAccessAdmin =
+    user?.roles?.includes("Admin") || user?.roles?.includes("Editor");
 
+  const appPath = canAccessAdmin ? "/admin" : "/member";
   const closeMenu = () => {
     setOpen(false);
   };
@@ -95,12 +105,12 @@ export default function PublicNavbar() {
               href="#why-cs-club"
               className="text-sm text-text-secondary transition-colors hover:text-text-primary"
             >
-              Why CS Club
+              Why UniMember
             </a>
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
-            <Link
+            {/* <Link
               to="/login"
               className="rounded-full px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
             >
@@ -117,7 +127,41 @@ export default function PublicNavbar() {
                 className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 aria-hidden="true"
               />
-            </Link>
+            </Link> */}
+            {loading ? (
+              <div className="h-10 w-28 rounded-full bg-slate-100 animate-pulse" />
+            ) : isAuthenticated ? (
+              <Link
+                to={appPath}
+                className="group inline-flex items-center gap-2 rounded-full bg-text-primary px-5 py-2.5 text-sm font-medium text-text-inverse transition-transform duration-200 hover:-translate-y-0.5"
+              >
+                Open platform
+                <LayoutDashboard
+                  size={15}
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
+                >
+                  Sign in
+                </Link>
+
+                <Link
+                  to="/register"
+                  className="group inline-flex items-center gap-2 rounded-full bg-text-primary px-5 py-2.5 text-sm font-medium text-text-inverse transition-transform duration-200 hover:-translate-y-0.5"
+                >
+                  Join the club
+                  <ArrowUpRight
+                    size={15}
+                    className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  />
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -209,7 +253,7 @@ export default function PublicNavbar() {
 
               <div className="mt-auto border-t border-border pt-6">
                 <div className="grid gap-3">
-                  <Link
+                  {/* <Link
                     to="/login"
                     onClick={closeMenu}
                     className="flex min-h-12 items-center justify-center rounded-full border border-border px-5 text-sm font-medium text-text-primary transition hover:bg-slate-50"
@@ -224,7 +268,38 @@ export default function PublicNavbar() {
                   >
                     Join the club
                     <ArrowUpRight size={15} />
-                  </Link>
+                  </Link> */}
+                  {loading ? (
+                    <div className="h-10 w-28 rounded-full bg-slate-100 animate-pulse" />
+                  ) : isAuthenticated ? (
+                    <Link
+                      to={appPath}
+                      onClick={closeMenu}
+                      className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-text-primary px-5 text-sm font-medium text-text-inverse"
+                    >
+                      Open platform
+                      <LayoutDashboard size={15} />
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        onClick={closeMenu}
+                        className="flex min-h-12 items-center justify-center rounded-full border border-border px-5 text-sm font-medium text-text-primary"
+                      >
+                        Sign in
+                      </Link>
+
+                      <Link
+                        to="/register"
+                        onClick={closeMenu}
+                        className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-text-primary px-5 text-sm font-medium text-text-inverse"
+                      >
+                        Join the club
+                        <ArrowUpRight size={15} />
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.aside>

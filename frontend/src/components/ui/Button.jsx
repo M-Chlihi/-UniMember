@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 const variants = {
   primary:
-    "bg-primary text-text-inverse hover:bg-primary-hover focus-visible:ring-primary",
+    " bg-text-primary text-text-inverse hover:bg-primary-hover focus-visible:ring-primary",
   secondary:
     "bg-surface border border-border text-text-primary hover:bg-slate-50 focus-visible:ring-primary",
   danger:

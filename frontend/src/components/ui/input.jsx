@@ -19,7 +19,7 @@ export default function Input({ label, error, helperText, id, ...props }) {
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : helperText ? helperId : undefined}
         className={[
-          "block w-full rounded-md border bg-surface",
+          "block w-full  border bg-surface",
           "px-3 py-2.5 text-sm text-text-primary",
           "outline-none transition",
           "placeholder:text-text-muted",

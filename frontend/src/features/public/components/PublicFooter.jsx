@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import BrandLogo from "../brand/BrandLogo";
 
 export default function PublicFooter() {
+  const currentYear = new Date().getFullYear();
   return (
     <footer className="border-t border-border bg-background px-5 py-10 sm:px-8 lg:px-10">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
@@ -10,7 +11,7 @@ export default function PublicFooter() {
             to="/"
             className="text-lg font-semibold tracking-tight text-text-primary"
           >
-            <BrandLogo size="md" />
+            UniMember
           </Link>
 
           <p className="mt-2 max-w-sm text-sm leading-6 text-text-muted">
@@ -41,7 +42,7 @@ export default function PublicFooter() {
       </div>
 
       <div className="mx-auto mt-8 max-w-7xl border-t border-border pt-6 text-xs text-text-muted">
-        © 2026 CS Club
+        © {currentYear} UniMember. All rights reserved
       </div>
     </footer>
   );

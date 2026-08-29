@@ -24,8 +24,8 @@ export default function MemberDashboardPage() {
           message={error?.message || "We couldn't load your dashboard."}
           onRetry={refetch}
         />
-      ) : activePoll.data ? (
-        <ActivePollCard poll={activePoll.data.poll} />
+      ) : activePoll?.poll ? (
+        <ActivePollCard poll={activePoll.poll} />
       ) : (
         <EmptyState
           title="No active poll"
@@ -37,3 +37,9 @@ export default function MemberDashboardPage() {
     </div>
   );
 }
+
+// activePoll?.poll;
+
+// <ActivePollCard
+//   poll={activePoll.poll}
+// />

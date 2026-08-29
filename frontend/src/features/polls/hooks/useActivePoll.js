@@ -8,11 +8,31 @@ export const useActivePoll = () => {
   return useQuery({
     queryKey: activePollQueryKey,
 
-    queryFn: getActivePoll,
+    queryFn: async () => {
+      try {
+        const response = await getActivePoll();
+        return response.data;
+      } catch (error) {
+        if (error?.response?.status === 404) {
+          return null;
+        }
+
+        throw error;
+      }
+    },
 
     staleTime: 30_000,
 
-    retry: 1,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 404) {
+        return false;
+      }
+
+      return failureCount < 1;
+    },
+
+    refetchOnWindowFocus: true,
+
     refetchIntervalInBackground: false,
   });
 };

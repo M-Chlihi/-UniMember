@@ -6,9 +6,10 @@ import LoadingScreen from "../../../../components/feedback/LoadingScreen";
 
 import PollFilters from "../components/PollFilters";
 import PollManagementTable from "../components/PollManagementTable";
+import { PERMISSIONS } from "../../../auth/constants/permissions";
 
 import Button from "../../../../components/ui/Button";
-
+import Can from "../../../auth/componenets/Can";
 import { useAdminPolls } from "../hooks/useAdminPolls";
 
 export default function AdminPollsPage() {
@@ -66,10 +67,11 @@ export default function AdminPollsPage() {
             Create, schedule, publish, and manage club polls.
           </p>
         </div>
-
-        <Button onClick={() => window.location.assign("/admin/polls/create")}>
-          Create poll
-        </Button>
+        <Can permission={PERMISSIONS.POLL_CREATE}>
+          <Button onClick={() => window.location.assign("/admin/polls/create")}>
+            Create poll
+          </Button>
+        </Can>
       </header>
 
       <PollFilters

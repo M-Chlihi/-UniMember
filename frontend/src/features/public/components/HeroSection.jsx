@@ -15,7 +15,7 @@ export default function HeroSection() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-115 bg-[radial-gradient(circle_at_50%_15%,rgba(99,102,241,0.12),transparent_55%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-115 bg-[radial-gradient(circle_at_50%_15%,rgba(61, 64, 254, 0.12),transparent_55%)]"
       />
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
@@ -38,7 +38,7 @@ export default function HeroSection() {
             </SectionLabel>{" "}
           </motion.div>
 
-          <motion.h1
+          {/* <motion.h1
             initial={{
               opacity: 0,
               y: 22,
@@ -55,8 +55,20 @@ export default function HeroSection() {
             className="mx-auto mt-5 max-w-4xl font-serif text-5xl leading-[0.96] tracking-[-0.04em] text-text-primary sm:text-6xl lg:text-8xl"
           >
             Shape what we <span className="italic">learn next.</span>
-          </motion.h1>
-
+          </motion.h1> */}
+          <h1
+            className="
+    mx-auto
+    max-w-5xl
+    font-serif
+    text-[clamp(3.5rem,8vw,7.5rem)]
+    leading-[0.9]
+    tracking-[-0.055em]
+    text-text-primary
+  "
+          >
+            Shape what we <span className="italic text-brand">learn next.</span>
+          </h1>
           <motion.p
             initial={{
               opacity: 0,
@@ -72,7 +84,7 @@ export default function HeroSection() {
             }}
             className="mx-auto mt-6 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg"
           >
-            A transparent voting platform built for the CS Club community.
+            A transparent platform built for the University Clubs community.
             Discover upcoming courses, cast your vote, and see decisions become
             shared experiences.
           </motion.p>
@@ -96,7 +108,7 @@ export default function HeroSection() {
               to="/register"
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-text-primary px-6 text-sm font-medium text-text-inverse shadow-lg shadow-slate-950/10 transition-transform duration-200 hover:-translate-y-0.5"
             >
-              Join the club
+              Create your account
               <ArrowRight size={16} aria-hidden="true" />
             </Link>
 

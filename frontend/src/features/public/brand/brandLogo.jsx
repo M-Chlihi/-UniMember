@@ -31,7 +31,7 @@ export default function BrandLogo({
       aria-label="UniMember home"
     >
       <img
-        src="../brand/unimember-mark.svg"
+        src="./unimember-mark.svg"
         alt=""
         className={`${styles.icon} w-auto shrink-0`}
       />
