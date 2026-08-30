@@ -25,6 +25,7 @@ import ActivePollPage from "../features/voting/pages/activePollPage";
 import PollResultsPage from "../features/results/pages/pollResutlsPage";
 import RequirePermission from "../features/auth/componenets/RequirePermission";
 import { PERMISSIONS } from "../features/auth/constants/permissions";
+import AdminUsersPage from "../features/admin/user/pages/AdminUsersPage";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -116,6 +117,17 @@ export const router = createBrowserRouter([
                       {
                         path: "admin/polls/:pollId/edit",
                         element: <EditPollPage />,
+                      },
+                    ],
+                  },
+                  {
+                    element: (
+                      <RequirePermission permission={PERMISSIONS.USER_MANAGE} />
+                    ),
+                    children: [
+                      {
+                        path: "admin/users",
+                        element: <AdminUsersPage />,
                       },
                     ],
                   },

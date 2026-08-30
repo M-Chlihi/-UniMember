@@ -27,6 +27,11 @@ export const navigationItems = [
     roles: [ROLES.EDITOR, ROLES.ADMIN],
   },
   {
+    label: "Users Management",
+    path: "/admin/users",
+    roles: [ROLES.ADMIN],
+  },
+  {
     label: "Notifications",
     path: "/admin/notifications",
     roles: [ROLES.ADMIN],
