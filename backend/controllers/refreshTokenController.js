@@ -41,6 +41,7 @@ const hundleRefreshToken = async (req, res) => {
         username: foundUser.username,
         email: foundUser.email,
         roles: roleNames,
+        createdAt: foundUser.createdAt,
       },
     });
   });

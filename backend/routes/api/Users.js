@@ -1,6 +1,7 @@
 const express = require("express");
 
 const router = express.Router();
+const ROLE_NAMES = require("../../config/roleNames");
 
 const {
   updateUserRoles,
@@ -11,14 +12,21 @@ const verifyJWT = require("../../middleware/verifyJWT");
 const verifyRoles = require("../../middleware/verifyRoles");
 const validate = require("../../middleware/validation");
 
-const { updateRolesSchema } = require("../../validation/authSchema");
-
-const ROLES_LIST = require("../../config/roles_list");
-router.route("/").get(verifyJWT, GETUser);
+const {
+  updateRolesSchema,
+  usersListQuerySchema,
+} = require("../../validation/authSchema");
+router.get(
+  "/",
+  verifyJWT,
+  verifyRoles(ROLE_NAMES.Admin),
+  validate(usersListQuerySchema, "query"),
+  GETUser,
+);
 router.patch(
   "/:id/roles",
   verifyJWT,
-  verifyRoles(ROLES_LIST.Admin),
+  verifyRoles(ROLE_NAMES.Admin),
   validate(updateRolesSchema),
   updateUserRoles,
 );

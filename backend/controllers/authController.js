@@ -67,6 +67,7 @@ const login = async (req, res) => {
           id: foundUser._id,
           email: foundUser.email,
           roles: roleNames,
+          createdAt: foundUser.createdAt,
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
@@ -97,6 +98,8 @@ const login = async (req, res) => {
         username: foundUser.username,
         email: foundUser.email,
         roles: roleNames,
+
+        createdAt: foundUser.createdAt,
       },
     });
   } catch (err) {

@@ -29,7 +29,9 @@ const formatUser = (user) => ({
   id: user._id.toString(),
   username: user.username,
   email: user.email,
-  roles: Object.values(user.roles),
+  roles: Object.entries(user.roles)
+    .filter(([, value]) => Boolean(value))
+    .map(([role]) => role),
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
 });
