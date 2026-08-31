@@ -1,31 +1,34 @@
 import MobileNavigation from "./MobileNavigation";
-import { useAuth } from "../../features/auth/hooks/useAuth";
-import Button from "../ui/Button";
+
+import { Bell } from "lucide-react";
+
+import UserMenu from "./UserMenu";
+import BrandLogo from "../../features/public/brand/brandLogo";
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
-
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-3">
+    <header className=" shadow-[0_18px_100px_rgba(15,23,42,0.12)] sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="lg:hidden">
             <MobileNavigation />
           </div>
-
-          <span className="text-lg font-semibold">CS Club</span>
+          <BrandLogo />
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="hidden text-right sm:block">
-            <p className="text-sm font-medium">{user?.username}</p>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="relative inline-flex size-10 items-center justify-center rounded-full text-text-secondary transition hover:bg-slate-100 hover:text-text-primary"
+            aria-label="Notifications"
+          >
+            <Bell size={18} strokeWidth={1.8} />
 
-            <p className="text-xs text-text-muted">{user?.roles?.join(", ")}</p>
-          </div>
+            {/* Keep this visually subtle until the notification-center feature is implemented */}
+            <span className="absolute right-2 top-2 size-1.5 rounded-full bg-brand" />
+          </button>
 
-          <Button variant="ghost" size="sm" onClick={logout}>
-            Logout
-          </Button>
+          <UserMenu />
         </div>
       </div>
     </header>

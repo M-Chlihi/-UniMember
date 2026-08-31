@@ -26,6 +26,7 @@ import PollResultsPage from "../features/results/pages/pollResutlsPage";
 import RequirePermission from "../features/auth/componenets/RequirePermission";
 import { PERMISSIONS } from "../features/auth/constants/permissions";
 import AdminUsersPage from "../features/admin/user/pages/AdminUsersPage";
+import ProfilePage from "../features/profile/UserprofilePage";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -55,6 +56,10 @@ export const router = createBrowserRouter([
           {
             element: <AppShell />,
             children: [
+              {
+                path: "profile",
+                element: <ProfilePage />,
+              },
               {
                 path: "member",
                 children: [

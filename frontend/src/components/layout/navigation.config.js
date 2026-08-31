@@ -1,39 +1,80 @@
-import { ROLES } from "../../features/auth/constants/roles";
+import {
+  LayoutDashboard,
+  Vote,
+  History,
+  PanelsTopLeft,
+  ClipboardList,
+  Bell,
+  Users,
+} from "lucide-react";
 
-export const navigationItems = [
+import { PERMISSIONS } from "../../features/auth/constants/permissions";
+
+export const navigationSections = [
   {
-    label: "Dashboard",
-    path: "/member",
-    roles: [ROLES.USER, ROLES.EDITOR, ROLES.ADMIN],
+    key: "main",
+    label: "Main",
+
+    items: [
+      {
+        label: "Dashboard",
+        path: "/member",
+        icon: LayoutDashboard,
+        end: true,
+      },
+
+      {
+        label: "Active polls",
+        path: "/member/poll",
+        icon: Vote,
+        end: true,
+      },
+
+      {
+        label: "History",
+        path: "/member/history",
+        icon: History,
+        end: true,
+      },
+    ],
   },
+
   {
-    label: "Active Poll",
-    path: "/member/poll",
-    roles: [ROLES.USER, ROLES.EDITOR, ROLES.ADMIN],
-  },
-  {
-    label: "History",
-    path: "/member/history",
-    roles: [ROLES.USER, ROLES.EDITOR, ROLES.ADMIN],
-  },
-  {
-    label: "Admin Dashboard",
-    path: "/admin",
-    roles: [ROLES.EDITOR, ROLES.ADMIN],
-  },
-  {
-    label: "Poll Management",
-    path: "/admin/polls",
-    roles: [ROLES.EDITOR, ROLES.ADMIN],
-  },
-  {
-    label: "Users Management",
-    path: "/admin/users",
-    roles: [ROLES.ADMIN],
-  },
-  {
-    label: "Notifications",
-    path: "/admin/notifications",
-    roles: [ROLES.ADMIN],
+    key: "management",
+    label: "Management",
+
+    items: [
+      {
+        label: "Admin dashboard",
+        path: "/admin",
+        icon: PanelsTopLeft,
+        permission: PERMISSIONS.ADMIN_DASHBOARD_VIEW,
+        end: true,
+      },
+
+      {
+        label: "Poll management",
+        path: "/admin/polls",
+        icon: ClipboardList,
+        permission: PERMISSIONS.POLL_VIEW_MANAGEMENT,
+        end: false,
+      },
+
+      {
+        label: "Notifications",
+        path: "/admin/notifications",
+        icon: Bell,
+        permission: PERMISSIONS.NOTIFICATION_VIEW,
+        end: false,
+      },
+
+      {
+        label: "Users",
+        path: "/admin/users",
+        icon: Users,
+        permission: PERMISSIONS.USER_MANAGE,
+        end: true,
+      },
+    ],
   },
 ];
