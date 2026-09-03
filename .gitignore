@@ -24,6 +24,6 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
-
+tests/
 # Coverage
 coverage/
