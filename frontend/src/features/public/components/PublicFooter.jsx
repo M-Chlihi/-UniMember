@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import BrandLogo from "../brand/BrandLogo";
+import BrandLogo from "../brand/brandLogo";
 
 export default function PublicFooter() {
   const currentYear = new Date().getFullYear();

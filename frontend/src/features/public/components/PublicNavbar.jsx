@@ -8,7 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import BrandLogo from "../brand/BrandLogo";
+import BrandLogo from "../brand/brandLogo";
 import { useAuth } from "../../auth/hooks/useAuth";
 export default function PublicNavbar() {
   const [open, setOpen] = useState(false);

@@ -2,7 +2,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import Input from "../../../../components/ui/Input";
+import Input from "../../../../components/ui/input";
 import Button from "../../../../components/ui/Button";
 
 import { pollFormSchema } from "../schemas/pollForm.schema";
