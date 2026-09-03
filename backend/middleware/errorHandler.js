@@ -1,17 +1,24 @@
 const { logEvent } = require("./logEvent");
 
 const errorHandler = (err, req, res, next) => {
-  logEvent(`${err.name}\t${err.message}`, "errorsLog.txt");
-
-  console.error(err.stack);
-
   const status = err.statusCode || err.status || 500;
 
+  const message =
+    status >= 500 ? "Internal server error" : err.message || "Request failed";
+
+  const logMessage = [
+    `${req.method} ${req.path}`,
+    `STATUS: ${status}`,
+    `ERROR: ${err.name || "Error"}`,
+    `MESSAGE: ${err.message || "Unknown error"}`,
+    `STACK: ${err.stack || "No stack trace"}`,
+  ].join(" | ");
+
+  logEvent(logMessage);
+
   res.status(status).json({
-    message: status === 500 ? "Internal server error" : err.message,
+    message,
   });
 };
 
-module.exports = {
-  errorHandler,
-};
+module.exports = { errorHandler };
