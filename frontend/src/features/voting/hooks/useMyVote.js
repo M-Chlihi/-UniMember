@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { getMyVote } from "../api/voting.api";
-import { votingKeys } from "./queryKeys";
+import { votingKeys } from "./querykeys";
 
 export const useMyVote = (pollId) => {
   return useQuery({

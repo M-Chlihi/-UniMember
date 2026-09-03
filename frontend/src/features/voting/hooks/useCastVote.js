@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { castVote } from "../api/voting.api";
 
-import { votingKeys } from "./queryKeys";
+import { votingKeys } from "./querykeys";
 
 export const useCastVote = (pollId) => {
   const queryClient = useQueryClient();
