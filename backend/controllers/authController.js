@@ -1,10 +1,9 @@
+const env = require("../config/env");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { refreshCookieOptions } = require("../config/cookieOptions");
 
 const bycript = require("bcrypt");
-require("dotenv").config();
-
 const register = async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -70,18 +69,18 @@ const login = async (req, res) => {
           createdAt: foundUser.createdAt,
         },
       },
-      process.env.ACCESS_TOKEN_SECRET,
+      env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
+        expiresIn: env.ACCESS_TOKEN_EXPIRES_IN,
       },
     );
     const refreshToken = jwt.sign(
       {
         email: foundUser.email,
       },
-      process.env.REFRESH_TOKEN_SECRET,
+      env.REFRESH_TOKEN_SECRET,
       {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
+        expiresIn: env.REFRESH_TOKEN_EXPIRES_IN,
       },
     );
 

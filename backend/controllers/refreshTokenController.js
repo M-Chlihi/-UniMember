@@ -1,3 +1,4 @@
+const env = require("../config/env");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
@@ -15,7 +16,7 @@ const hundleRefreshToken = async (req, res) => {
 
   if (!foundUser) return res.sendStatus(403);
   // evaluate JWT
-  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+  jwt.verify(refreshToken, env.REFRESH_TOKEN_SECRET, (err, decoded) => {
     if (err || foundUser.email !== decoded.email) return res.sendStatus(403);
     const roleNames = Object.entries(foundUser.roles)
       .filter(([, value]) => value)
@@ -29,9 +30,9 @@ const hundleRefreshToken = async (req, res) => {
           roles: roleNames,
         },
       },
-      process.env.ACCESS_TOKEN_SECRET,
+      env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
+        expiresIn: env.ACCESS_TOKEN_EXPIRES_IN,
       },
     );
     res.json({

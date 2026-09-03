@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const { formatUser } = require("../utils/Mapper");
+const ROLES_LIST = require("../config/roles_list");
 const GETUser = async (req, res, next) => {
   try {
     const { page = 1, limit = 20, search = "", role = "" } = req.query;
