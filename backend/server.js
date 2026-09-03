@@ -1,6 +1,6 @@
 const env = require("./config/env");
 const app = require("./app");
-const { startJobs } = require("./jobs");
+const { startJobs } = require("./Jobs");
 const connectDB = require("./config/dbConn");
 const PORT = env.PORT;
 const mongoose = require("mongoose");
