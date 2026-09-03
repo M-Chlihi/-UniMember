@@ -14,7 +14,7 @@ const errorHandler = (err, req, res, next) => {
     `STACK: ${err.stack || "No stack trace"}`,
   ].join(" | ");
 
-  logEvent(logMessage);
+  logEvent(logMessage, "errorsLog.txt");
 
   res.status(status).json({
     message,
