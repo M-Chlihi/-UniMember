@@ -3,7 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { ROLES } from "../features/auth/constants/roles";
 import App from "./App";
 import LandingPage from "../features/public/pages/LandingPage";
-import LoginPage from "../features/auth/pages/LoginPage";
+import LoginPage from "../features/auth/pages/loginPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import RequireAuth from "../features/auth/componenets/RequireAuth";
 import RequireGuest from "../features/auth/componenets/RequireGuest";
