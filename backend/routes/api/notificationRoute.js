@@ -36,7 +36,7 @@ router.get(
   "/summary",
   verifyJWT,
   verifyRoles(ROLE_NAMES.Admin),
-  validate(notificationListQuerySchema, "query"),
+  validate(notificationSummaryQuerySchema, "query"),
   getNotificationSummaryController,
 );
 module.exports = router;

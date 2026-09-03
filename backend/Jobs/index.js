@@ -13,6 +13,11 @@ const startJobs = async () => {
   setInterval(runNotificationRetryJob, 10_000);
 
   setInterval(recoverStuckNotifications, 60_000);
+  return () => {
+    clearInterval(pollLifecycleInterval);
+    clearInterval(notificationRetryInterval);
+    clearInterval(notificationRecoveryInterval);
+  };
 };
 
 module.exports = {
