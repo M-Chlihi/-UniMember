@@ -42,6 +42,3 @@ module.exports = {
   updateRolesSchema,
   usersListQuerySchema,
 };
-
-//  department: Joi.string().trim().required(),
-//   salary: Joi.required(),

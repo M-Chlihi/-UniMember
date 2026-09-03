@@ -4,50 +4,6 @@ const { NOTIFICATION_STATUS } = require("../utils/notificationConstantes");
 
 const { MAX_ATTEMPTS } = require("../utils/retryPolicy");
 
-// const claimNotification = async (notificationId) => {
-//   const now = new Date();
-
-//   const notification = await Notification.findOneAndUpdate(
-//     {
-//       _id: notificationId,
-
-//       status: NOTIFICATION_STATUS.FAILED,
-
-//       attempts: {
-//         $lt: MAX_ATTEMPTS,
-//       },
-
-//       nextAttemptAt: {
-//         $lte: now,
-//       },
-//     },
-
-//     {
-//       $set: {
-//         status: NOTIFICATION_STATUS.PROCESSING,
-
-//         lastAttemptAt: now,
-
-//         processingStartedAt: now,
-
-//         error: null,
-//       },
-
-//       $inc: {
-//         attempts: 1,
-//       },
-//     },
-
-//     {
-//       new: true,
-//     },
-//   )
-//     .populate("recipientId", "email username")
-//     .populate("pollId", "title")
-//     .exec();
-
-//   return notification;
-// };
 const claimNotification = async (notificationId) => {
   const now = new Date();
 

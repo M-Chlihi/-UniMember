@@ -22,7 +22,7 @@ const publishPoll = async (pollId) => {
 
   if (optionsCount < 2) {
     const error = new Error(
-      "A poll must contain between 3 and 4 options before publishing",
+      "A poll must contain more than 2 options before publishing",
     );
     error.status = 409;
     throw error;

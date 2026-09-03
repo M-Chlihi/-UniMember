@@ -60,39 +60,3 @@ const processNotifications = async () => {
 module.exports = {
   processNotifications,
 };
-// const retryFailedNotifications = async () => {
-//   const now = new Date();
-
-//   const candidates = await Notification.find({
-//     status: NOTIFICATION_STATUS.FAILED,
-
-//     attempts: {
-//       $lt: MAX_ATTEMPTS,
-//     },
-
-//     nextAttemptAt: {
-//       $lte: now,
-//     },
-//   })
-//     .select("_id")
-//     .limit(100)
-//     .exec();
-
-//   for (const candidate of candidates) {
-//     try {
-//       const claimed = await claimNotification(candidate._id);
-
-//       if (!claimed) {
-//         continue;
-//       }
-
-//       await deliverClaimedNotification(claimed);
-//     } catch (err) {
-//       console.error(`Retry failed for notification ${candidate._id}:`, err);
-//     }
-//   }
-// };
-
-// module.exports = {
-//   retryFailedNotifications,
-// };
