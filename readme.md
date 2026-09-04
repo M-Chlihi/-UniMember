@@ -1,1229 +1,1003 @@
-# 🎓 CS Club Course Voting & Notification Platform
+# UniMember
 
-> A production-minded full-stack platform for a Computer Science engineering club to create course polls, collect one-vote-per-member decisions, calculate results, and automatically notify organizers when a poll closes.
+> **A production-ready university community platform for managing polls, member voting, results, roles, and reliable notifications.**
+>
+> Built as a full-stack engineering project with a strong focus on **security, business rules, maintainability, reliability, and production deployment**
+
+<p align="center">
+  <img src="./frontend/src/features/public/brand/unimember-mark.svg" alt="UniMember" width="96" />
+</p>
+
+<p align="center">
+  <a href="#-product-overview">Product</a> ·
+  <a href="#-architecture">Architecture</a> ·
+  <a href="#-security">Security</a> ·
+  <a href="#-reliability">Reliability</a> ·
+  <a href="#-deployment">Deployment</a> ·
+  <a href="#-engineering-highlights">Engineering highlights</a>
+</p>
 
 <p align="center">
 
-  <img src="https://img.shields.io/badge/Node.js-Backend-339933?style=for-the-badge&logo=node.js&logoColor=white" />
-  <img src="https://img.shields.io/badge/Express.js-REST%20API-000000?style=for-the-badge&logo=express&logoColor=white" />
-  <img src="https://img.shields.io/badge/MongoDB-Database-47A248?style=for-the-badge&logo=mongodb&logoColor=white" />
-  <img src="https://img.shields.io/badge/Mongoose-ODM-880000?style=for-the-badge&logo=mongoose&logoColor=white" />
-  <img src="https://img.shields.io/badge/JWT-Authentication-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" />
-  <img src="https://img.shields.io/badge/Joi-Validation-8A2BE2?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Resend-Email%20Delivery-000000?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Frontend-React%2019-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white" alt="TanStack_Query" />
+  <img src="https://img.shields.io/badge/Backend-Node.js%2024-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/API-Express-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/Database-MongoDB%20Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB Atlas" />
+  <img src="https://img.shields.io/badge/ODM-Mongoose-880000?style=for-the-badge&logo=mongoose&logoColor=white" alt="Mongoose" />
+  <img src="https://img.shields.io/badge/Auth-JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT" />
+  <img src="https://img.shields.io/badge/Validation-Joi-8A2BE2?style=for-the-badge" alt="Joi" />
+  <img src="https://img.shields.io/badge/Email-Resend-000000?style=for-the-badge" alt="Resend" />
+</p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Frontend%20Hosting-Vercel-000000?style=flat-square&logo=vercel" alt="Vercel" />
+  <img src="https://img.shields.io/badge/Backend%20Hosting-Render-46E3B7?style=flat-square&logo=render" alt="Render" />
+  <img src="https://img.shields.io/badge/Testing-Jest%20%2B%20Supertest-C21325?style=flat-square&logo=jest&logoColor=white" alt="Jest" />
+  <img src="https://img.shields.io/badge/License-ISC-lightgrey?style=flat-square" alt="License" />
 </p>
 
 ---
 
-## 🧠 What is this?
+## 🎯 Product overview
 
-This project is more than a voting CRUD API.
+**UniMember** is a university/community platform designed around a concrete workflow:
 
-It is a **domain-driven backend platform** built around a real problem from a Computer Science engineering community: deciding which course the club should organize next.
+- organizers create and manage course/community polls;
+- members authenticate and vote once per poll;
+- roles control which operations a user can perform;
+- poll lifecycle is managed explicitly instead of relying on a simple `isActive` flag;
+- results are calculated from MongoDB data with aggregation;
+- closing a poll can create a notification for organizers;
+- notification delivery is isolated behind a provider layer with retry and recovery behavior;
+- the application is deployed as a real production system with a React frontend, Express API, MongoDB Atlas, and Resend.
 
-An administrator creates a poll with 3–4 course options. Members authenticate, discover the active poll, vote once, and later inspect their voting history. When the voting window ends, the platform calculates the results and creates a notification for the poll organizer. The notification subsystem then delivers the result through an email provider with retry, idempotency, and failure recovery mechanisms.
+The project started from a learning REST API and evolved into a **domain-oriented, production-deployed application**.
 
-The project evolved deliberately from a learning REST API into a realistic application architecture.
-
-The goal is not simply to make endpoints work.
-
-The goal is to understand **how authentication, authorization, validation, data modeling, database performance, business rules, background processing, reliability, and external services fit together inside one backend system.**
+The objective is not to maximize the number of technologies. It is to use the right technology for the right boundary and make the system easier to evolve.
 
 ---
 
-# 🚀 Product Workflow
+## Product workflow:
 
-```text
-                         ADMIN / EDITOR
-                               │
-                               ▼
-                        Create course poll
-                               │
-                               ▼
-                            Add options
-                               │
-                               ▼
-                             Publish
-                               │
-                               ▼
-                           SCHEDULED
-                               │
-                        startsAt is reached
-                               ▼
-                              OPEN
-                               │
-                     ┌─────────┴─────────┐
-                     │                   │
-                 Members vote       Admin monitors
-                     │
-                     ▼
-               One vote / poll
-                     │
-                     │ endsAt is reached
-                     ▼
-                    CLOSED
-                     │
-              ┌──────┴──────┐
-              ▼             ▼
-        Aggregate results  Create notification
-                              │
-                              ▼
-                           PENDING
-                              │
-                              ▼
-                          PROCESSING
-                              │
-                     ┌────────┴────────┐
-                     ▼                 ▼
-                   SENT             FAILED
-                                         │
-                                    Retry / Recovery
-                                         │
-                                         ▼
-                                      PROCESSING
+```mermaid
+flowchart LR
+    A[Admin / Editor] --> B[Create Poll]
+    B --> C[Add Options]
+    C --> D[Publish]
+    D --> E[Scheduled]
+    E --> F[Open]
+    F --> G[Members Vote]
+    G --> H[One Vote per Member]
+    F --> I[Poll Lifecycle Job]
+    I --> J[Closed]
+    J --> K[Aggregate Results]
+    J --> L[Create Notification]
+    L --> M[Notification Worker]
+    M --> N{Delivery}
+    N -->|Success| O[SENT]
+    N -->|Failure| P[FAILED]
+    P --> Q[Retry / Recovery]
+    Q --> M
 ```
 
 ---
 
-# 🏗️ System Architecture
+# Current Architecture
 
-```text
-┌───────────────────────────────────────────────────────────────────┐
-│                         React Frontend                             │
-│             Member UI / Admin Dashboard / Auth                    │
-└───────────────────────────────┬───────────────────────────────────┘
-                                │ HTTPS / REST
-                                ▼
-┌───────────────────────────────────────────────────────────────────┐
-│                         Express API                                │
-│                                                                   │
-│  Middleware                                                       │
-│  ├── CORS / Credentials                                           │
-│  ├── JWT Authentication                                           │
-│  ├── Role Authorization                                            │
-│  ├── Joi Request Validation                                        │
-│  └── Centralized Error Handling                                    │
-│                                                                   │
-│  Routes                                                           │
-│      ↓                                                            │
-│  Controllers                                                      │
-│      ↓                                                            │
-│  Services / Business Logic                                        │
-│      ↓                                                            │
-│  Mongoose Models                                                  │
-└───────────────┬──────────────────────────────────┬────────────────┘
-                │                                  │
-                ▼                                  ▼
-        ┌───────────────┐                  ┌─────────────────┐
-        │ MongoDB Atlas │                  │ Notification    │
-        │               │                  │ Providers       │
-        │ Users         │                  │                 │
-        │ Polls         │                  │ Email → Resend  │
-        │ Options       │                  │ WhatsApp later  │
-        │ Votes         │                  └─────────────────┘
-        │ Notifications │
-        └───────────────┘
+UniMember is split into a frontend application and a backend API, deployed independently.
+
+```mermaid
+flowchart TB
+    U[Browser]
+    V[Vercel<br/>React + Vite]
+    R[Render<br/>Node.js + Express]
+    DB[(MongoDB Atlas)]
+    E[Resend]
+
+    U --> V
+    V -->|HTTPS / REST + credentials| R
+    R --> DB
+    R --> E
 ```
 
-### Application layers
-
-```text
-HTTP
-  ↓
-Route
-  ↓
-Middleware
-  ↓
-Controller
-  ↓
-Service
-  ↓
-Model / Database / Provider
-```
-
-The architecture intentionally separates **transport concerns**, **business rules**, **persistence**, and **external infrastructure**.
-
----
-
-# 🔐 Authentication Flow
-
-Authentication answers:
-
-> **"Who are you?"**
-
-The platform uses a short-lived access token and a longer-lived refresh token.
-
-```text
-                        LOGIN
-                          │
-                          ▼
-                    Joi validation
-                          │
-                          ▼
-                    Find User in DB
-                          │
-                          ▼
-                 bcrypt password check
-                          │
-                 ┌────────┴────────┐
-                 │                 │
-              Invalid            Valid
-                 │                 │
-                 ▼                 ▼
-                401          Generate JWTs
-                                  │
-                     ┌────────────┴────────────┐
-                     │                         │
-                     ▼                         ▼
-                Access Token            Refresh Token
-                     │                         │
-                     │                         ▼
-                     │                  HttpOnly Cookie
-                     │                         │
-                     ▼                         ▼
-                  Protected API          MongoDB persistence
-```
-
-### Access token
-
-- Short-lived
-- Sent with protected API requests
-- Carries authenticated identity and roles
-
-### Refresh token
-
-- Longer-lived
-- Stored in an HttpOnly cookie
-- Persisted server-side
-- Used to issue new access tokens
-- Invalidated during logout
-
----
-
-# 🛡️ Authorization & RBAC
-
-Authentication and authorization are intentionally separate.
-
-```text
-Request
-   │
-   ▼
-verifyJWT
-   │
-   ▼
-Authenticated User
-   │
-   ▼
-verifyRoles(...allowedRoles)
-   │
-   ▼
-Protected Business Operation
-```
-
-Current roles:
-
-```js
-{
-  User: 2001,
-  Editor: 1984,
-  Admin: 5150
-}
-```
-
----
-
-# 🍪 Secure Session Handling
-
-Refresh tokens are stored in an HttpOnly cookie.
+### Application boundaries
 
 ```text
 Browser
-   │
-   │ HttpOnly Cookie
-   ▼
-Express
-   │
-   ▼
-Refresh-token validation
-   │
-   ▼
-MongoDB
-```
-
-Logout performs two operations:
-
-```text
-Invalidate server-side refresh token
-              +
-Clear browser cookie
-```
-
-The project also separates access-token lifetime from refresh-token lifetime so protected requests do not depend on a long-lived access token.
-
----
-
-# 🧩 Request Validation
-
-The API uses **Joi schemas as an explicit request boundary**.
-
-```text
-Incoming Request
-       │
-       ▼
-Joi schema
-       │
-   ┌───┴────┐
-   │        │
- Invalid   Valid
-   │        │
-   ▼        ▼
-  400    Controller
-            │
-            ▼
-         Service
-```
-
-Validation covers authentication, poll creation/update, option management, voting, and query parameters.
-
-The important design rule is:
-
-> **Joi validates the request shape; services enforce business rules.**
-
-For example, Joi can validate that `endsAt` is a date, while the service decides whether the poll's current lifecycle state allows that date to be changed.
-
----
-
-# 🗄️ Data Model
-
-The system models the business domain around independent entities rather than one giant document.
-
-```text
-User
- │
- ├───────────────┐
- │               │
- ▼               ▼
-Poll            Vote
- │               │
- │               ├──────► PollOption
- │               │
- └────► PollOption
-```
-
-### User
-
-```text
-_id
-username
-email
-password
-roles
-refresh/session data
-createdAt
-updatedAt
-```
-
-### Poll
-
-```text
-_id
-title
-description
-status
-startsAt
-endsAt
-createdBy
-createdAt
-updatedAt
-```
-
-### PollOption
-
-```text
-_id
-pollId
-title
-description
-createdAt
-updatedAt
-```
-
-### Vote
-
-```text
-_id
-pollId
-optionId
-userId
-createdAt
-updatedAt
-```
-
-### Notification
-
-```text
-_id
-pollId
-recipientId
-type
-channel
-status
-attempts
-lastAttemptAt
-nextAttemptAt
-processingStartedAt
-sentAt
-error
-createdAt
-updatedAt
-```
-
----
-
-# 🔗 Data Relationships
-
-### Poll → User
-
-A poll references the user who created it:
-
-```text
-Poll.createdBy → User._id
-```
-
-### Poll → PollOption
-
-```text
-Poll
- ├── PollOption
- ├── PollOption
- └── PollOption
-```
-
-### Vote → User / Poll / PollOption
-
-```text
-Vote
- ├── userId   → User
- ├── pollId   → Poll
- └── optionId → PollOption
-```
-
-This allows the system to keep growing relationships without duplicating large business objects across documents.
-
----
-
-# 🗳️ Voting Integrity
-
-One of the most important business rules is:
-
-> **A member can vote only once in a given poll.**
-
-The application checks for an existing vote, but the database also enforces the rule.
-
-```js
-voteSchema.index(
-  {
-    pollId: 1,
-    userId: 1,
-  },
-  {
-    unique: true,
-  },
-);
-```
-
-This creates a second line of defense against race conditions:
-
-```text
-Application check
-       +
-Database unique constraint
-       ↓
-One vote / member / poll
-```
-
----
-
-# 🔄 Poll Lifecycle
-
-Polls are modeled as a state machine instead of a simple `isActive` flag.
-
-```text
-                 ┌──────────────┐
-                 │    DRAFT     │
-                 └──────┬───────┘
-                        │ publish
-                        ▼
-                 ┌──────────────┐
-                 │  SCHEDULED   │
-                 └──────┬───────┘
-                        │ startsAt
-                        ▼
-                 ┌──────────────┐
-                 │     OPEN     │
-                 └──────┬───────┘
-                        │ endsAt
-                        ▼
-                 ┌──────────────┐
-                 │    CLOSED    │
-                 └──────────────┘
-
-DRAFT / SCHEDULED / OPEN ─────► CANCELLED
-```
-
-Important domain rules include:
-
-- Draft/scheduled polls can be edited.
-- Open polls are locked against structural edits.
-- Closed polls are immutable.
-- Votes are accepted only while a poll is open and not expired.
-- Publishing requires the configured number of choices.
-- Cancellation does not delete historical votes.
-
----
-
-# 📊 Results & MongoDB Aggregation
-
-Results are not calculated by downloading every vote into Node.js.
-
-MongoDB performs aggregation work close to the data.
-
-```text
-Poll Options
-    │
-    ▼
-$lookup Votes
-    │
-    ▼
-Count votes
-    │
-    ▼
-Project result shape
-    │
-    ▼
-Sort
-    │
-    ▼
-Application calculates percentages / winner
-```
-
-The result layer handles:
-
-- Total votes
-- Vote counts per option
-- Percentages
-- Zero-vote options
-- Winner detection
-- Tie detection
-
-An important product rule is preserved:
-
-```text
-Tie
- ↓
-No arbitrary winner
-```
-
----
-
-# 📈 MongoDB Performance Engineering
-
-The project deliberately goes beyond CRUD MongoDB usage.
-
-### Indexing concepts practiced
-
-- Single-field indexes
-- Unique indexes
-- Compound indexes
-- Query-driven index design
-- Prefix behavior of compound indexes
-- Index trade-offs
-- Notification worker indexes
-
-### Query analysis
-
-Queries are inspected using:
-
-```js
-.explain("executionStats")
-```
-
-The project has explicitly compared:
-
-```text
-COLLSCAN
-   vs
-IXSCAN + FETCH
-```
-
-and evaluated:
-
-```text
-nReturned
-totalKeysExamined
-totalDocsExamined
-executionTimeMillis
-winningPlan
-```
-
-The engineering principle is:
-
-> **Indexes are designed from real query patterns and verified with measurements, not added blindly.**
-
----
-
-# 🔔 Notification Architecture
-
-The notification system was designed as an independent subsystem rather than putting email code inside poll controllers.
-
-```text
-Poll closes
-    │
-    ▼
-Create Notification
-    │
-    ▼
-PENDING
-    │
-    ▼
-Notification Worker
-    │
-    ▼
-Atomic Claim
-    │
-    ▼
-PROCESSING
-    │
-    ├───────────────┐
-    ▼               ▼
-  SENT            FAILED
-                     │
-                     ▼
-                nextAttemptAt
-                     │
-                     ▼
-                   Retry
-```
-
----
-
-# ⚙️ Notification Reliability
-
-The notification subsystem deliberately models delivery as a state machine:
-
-```text
-PENDING
-   ↓
-PROCESSING
-   ↓
-SENT
-```
-
-or:
-
-```text
-PENDING
-   ↓
-PROCESSING
-   ↓
-FAILED
-   ↓
-backoff
-   ↓
-PROCESSING
-   ↓
-SENT / FAILED
-```
-
-Implemented reliability concepts include:
-
-- Atomic notification claiming
-- Retry attempts
-- Exponential backoff
-- Jitter
-- `nextAttemptAt`
-- `processingStartedAt`
-- Stuck-worker recovery
-- Maximum-attempt protection
-- Notification uniqueness constraints
-- Provider idempotency
-
-### Concurrency-safe claiming
-
-Workers do not simply read a notification and assume ownership.
-
-They atomically transition an eligible notification:
-
-```text
-FAILED / PENDING
-        │
-        │ findOneAndUpdate()
-        ▼
-   PROCESSING
-```
-
-If two workers race for the same notification:
-
-```text
-Worker A → PROCESSING ✅
-Worker B → no match ❌
-```
-
-This prevents duplicate processing at the application layer.
-
----
-
-# 📧 External Provider Isolation
-
-The domain never directly depends on Resend.
-
-```text
-Notification Service
-       │
-       ▼
-Email Provider Interface
-       │
-       ▼
-Resend
-```
-
-The provider receives:
-
-```text
-to
-subject
-html
-idempotencyKey
-```
-
-This makes the delivery infrastructure replaceable without rewriting poll, voting, or lifecycle logic.
-
-A future WhatsApp channel can follow the same boundary:
-
-```text
-Notification Service
-       ├── Email Provider
-       └── WhatsApp Provider
-```
-
----
-
-# 🧱 API Architecture
-
-The backend uses a layered REST design:
-
-```text
-HTTP Request
-     │
-     ▼
-Route
-     │
-     ▼
+  ↓
+React UI
+  ↓
+API client / React Query
+  ↓ HTTPS
+Express routes
+  ↓
 Middleware
-     │
-     ├── Authentication
-     ├── Authorization
-     └── Validation
-     │
-     ▼
-Controller
-     │
-     ▼
-Service
-     │
-     ├── MongoDB / Mongoose
-     ├── Aggregation
-     └── External Provider
-     │
-     ▼
-DTO / Response Contract
-     │
-     ▼
-HTTP Response
+  ├─ CORS / credentials
+  ├─ authentication
+  ├─ authorization
+  ├─ validation
+  ├─ rate limiting
+  └─ security headers
+  ↓
+Controllers
+  ↓
+Services / domain logic
+  ├─ MongoDB / Mongoose
+  ├─ aggregation
+  ├─ lifecycle logic
+  └─ notification infrastructure
+  ↓
+External systems
+  ├─ MongoDB Atlas
+  └─ Resend
 ```
 
-Controllers stay focused on HTTP concerns while business rules live in services.
+### Why this structure?
+
+The main architectural rule is **separation of responsibilities**:
+
+- **Routes** define the HTTP surface.
+- **Middleware** handles cross-cutting concerns.
+- **Controllers** translate HTTP requests into application operations.
+- **Services** own business rules and orchestration.
+- **Models** define persistence behavior and database constraints.
+- **Providers** isolate third-party infrastructure.
+- **Mappers / response shaping** keep API output intentional.
+
+This keeps HTTP concerns from leaking into domain logic and makes infrastructure replaceable.
 
 ---
 
-# 📡 API Surface
+# ⚛️ Frontend architecture
 
-## Authentication
+The frontend is a React 19 + Vite application organized by feature rather than by a single large component tree.
 
-| Method | Endpoint                | Purpose                    | Access         |
-| ------ | ----------------------- | -------------------------- | -------------- |
-| `POST` | `/api/v1/auth/register` | Register member            | Public         |
-| `POST` | `/api/v1/auth/login`    | Authenticate member        | Public         |
-| `POST` | `/api/v1/auth/refresh`  | Issue new access token     | Refresh cookie |
-| `POST` | `/api/v1/auth/logout`   | Invalidate refresh session | Authenticated  |
+### Main frontend technologies
 
-## Polls
+| Technology                 | Responsibility                               |
+| -------------------------- | -------------------------------------------- |
+| React                      | UI and component composition                 |
+| Vite                       | Development and production builds            |
+| React Router               | Client-side routing                          |
+| TanStack React Query       | Server-state fetching, caching, invalidation |
+| Axios                      | HTTP client                                  |
+| React Hook Form            | Form state                                   |
+| Zod                        | Client-side schema validation                |
+| Motion                     | UI transitions and interaction polish        |
+| Tailwind / utility styling | Styling support                              |
+| Bootstrap                  | Existing UI utilities                        |
+| Lucide React               | Icons                                        |
+| Oxlint                     | Static analysis / linting                    |
 
-| Method   | Endpoint                        | Purpose                     |
-| -------- | ------------------------------- | --------------------------- | -------------- |
-| `GET`    | `/api/v1/polls`                 | List polls                  | Admin / Editor |
-| `GET`    | `/api/v1/polls/:pollId`         | Poll details                | Authenticated  |
-| `POST`   | `/api/v1/polls`                 | Create poll                 | Admin / Editor |
-| `PATCH`  | `/api/v1/polls/:pollId`         | Update draft/scheduled poll | Admin / Editor |
-| `DELETE` | `/api/v1/polls/:pollId`         | Delete draft                | Admin / Editor |
-| `POST`   | `/api/v1/polls/:pollId/cancel`  | Cancel poll                 | Admin / Editor |
-| `POST`   | `/api/v1/polls/:pollId/publish` | Publish poll                | Admin / Editor |
-| `POST`   | `/api/v1/polls/:pollId/close`   | Close open poll             | Admin / Editor |
-
-## Poll Options
-
-| Method   | Endpoint                                  | Purpose                     |
-| -------- | ----------------------------------------- | --------------------------- | -------------- |
-| `POST`   | `/api/v1/polls/:pollId/options`           | Add course option           | Admin / Editor |
-| `PATCH`  | `/api/v1/polls/:pollId/options/:optionId` | Edit option where allowed   | Admin / Editor |
-| `DELETE` | `/api/v1/polls/:pollId/options/:optionId` | Remove option where allowed | Admin / Editor |
-
-## Member Voting
-
-| Method | Endpoint                        | Purpose                 |
-| ------ | ------------------------------- | ----------------------- | ------------- |
-| `GET`  | `/api/v1/polls/active`          | Get current open poll   | Authenticated |
-| `POST` | `/api/v1/polls/:pollId/votes`   | Cast vote               | Authenticated |
-| `GET`  | `/api/v1/polls/:pollId/my-vote` | Get current user's vote | Authenticated |
-| `GET`  | `/api/v1/polls/history`         | Voting history          | Authenticated |
-
-## Results
-
-| Method | Endpoint                        | Purpose                   |
-| ------ | ------------------------------- | ------------------------- | ---------- |
-| `GET`  | `/api/v1/polls/:pollId/results` | Calculate/display results | Authorized |
-
-## Notifications
-
-| Method | Endpoint                                | Purpose                 | Access |
-| ------ | --------------------------------------- | ----------------------- | ------ |
-| `GET`  | `/api/v1/notifications`                 | Notification operations | Admin  |
-| `GET`  | `/api/v1/notifications/:notificationId` | Notification detail     | Admin  |
-
----
-
-# 🧩 Project Structure
+### Frontend feature boundaries
 
 ```text
-src/
-│
+frontend/src/
+├── api/
+├── app/
+├── components/
+│   ├── feedback/
+│   ├── layout/
+│   └── ui/
+├── features/
+│   ├── admin/
+│   ├── auth/
+│   ├── dashboard/
+│   ├── notifications/
+│   ├── polls/
+│   ├── profile/
+│   ├── public/
+│   ├── results/
+│   └── voting/
+├── hooks/
+├── styles/
+└── main.jsx
+```
+
+The frontend also uses a permission-oriented UI abstraction (`RequirePermission` / `Can`) so the interface can hide operations users are not allowed to perform, while the backend remains the final authorization boundary.
+
+---
+
+# 🧩 Backend architecture
+
+The backend intentionally follows a layered Express architecture.
+
+```text
+backend/
 ├── config/
-│   ├── db.js
-│   ├── cors.js
-│   └── roles.js
-│
 ├── controllers/
-│   ├── auth.controller.js
-│   ├── poll.controller.js
-│   ├── vote.controller.js
-│   └── notification.controller.js
-│
 ├── middleware/
-│   ├── authenticate.js
-│   ├── authorize.js
-│   ├── validate.js
-│   ├── errorHandler.js
-│   └── logger.js
-│
 ├── models/
-│   ├── User.js
-│   ├── Poll.js
-│   ├── PollOption.js
-│   ├── Vote.js
-│   └── Notification.js
-│
 ├── routes/
-│   ├── auth.routes.js
-│   ├── poll.routes.js
-│   ├── vote.routes.js
-│   └── notification.routes.js
-│
 ├── services/
-│   ├── auth.service.js
-│   ├── poll.service.js
-│   ├── pollLifecycle.service.js
-│   ├── pollResult.service.js
-│   ├── vote.service.js
-│   ├── notification.service.js
-│   ├── notificationClaim.service.js
-│   ├── notificationRetry.service.js
-│   ├── notificationContent.service.js
-│   └── providers/
-│       └── email.provider.js
-│
-├── jobs/
-│   ├── pollLifecycle.job.js
-│   ├── notificationWorker.job.js
-│   └── notificationRecovery.job.js
-│
+│   └── provider/
+├── Jobs/
 ├── validation/
-│   ├── auth.schemas.js
-│   ├── poll.schemas.js
-│   ├── vote.schemas.js
-│   └── notification.schemas.js
-│
 ├── utils/
-│   ├── retryPolicy.js
-│   ├── notificationConstants.js
-│   ├── pollState.js
-│   └── pollMapper.js
-│
+├── tests/
+├── script/
 ├── app.js
 └── server.js
 ```
 
----
+### Responsibilities
 
-# 🛠️ Tech Stack
-
-| Technology        | Purpose                              |
-| ----------------- | ------------------------------------ |
-| **Node.js**       | JavaScript runtime                   |
-| **Express.js**    | HTTP server and REST API             |
-| **MongoDB Atlas** | Persistent database                  |
-| **Mongoose**      | MongoDB ODM                          |
-| **JWT**           | Access / refresh authentication      |
-| **bcrypt**        | Password hashing                     |
-| **Joi**           | Request validation and normalization |
-| **cookie-parser** | Cookie handling                      |
-| **CORS**          | Cross-origin request control         |
-| **dotenv**        | Environment configuration            |
-| **Resend**        | Transactional email delivery         |
+| Layer                | Responsibility                                                     |
+| -------------------- | ------------------------------------------------------------------ |
+| `routes/`            | HTTP routing and middleware composition                            |
+| `middleware/`        | authentication, roles, validation, CORS, logging, errors, security |
+| `controllers/`       | HTTP-level request/response handling                               |
+| `services/`          | business logic and orchestration                                   |
+| `models/`            | Mongoose schemas, indexes, persistence                             |
+| `validation/`        | Joi request schemas                                                |
+| `Jobs/`              | scheduled lifecycle/recovery/background work                       |
+| `services/provider/` | external provider abstraction                                      |
+| `utils/`             | shared mapping/retry/constants helpers                             |
+| `config/`            | environment, database, CORS, cookies, role configuration           |
 
 ---
 
-# 🧪 Verification Strategy
+# Authentication
 
-The product has been developed ticket-by-ticket with explicit acceptance criteria and manual API verification.
+UniMember uses an **access-token + refresh-token** session model.
 
-Examples of scenarios already exercised include:
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant API as Express API
+    participant DB as MongoDB
+
+    C->>API: Login (email + password)
+    API->>DB: Find user
+    DB-->>API: User + password hash
+    API->>API: bcrypt.compare()
+    API->>API: Sign access token
+    API->>API: Sign refresh token
+    API->>DB: Persist refresh token
+    API-->>C: Access token + HttpOnly refresh cookie
+
+    C->>API: Protected request + Bearer access token
+    API-->>C: Protected response
+
+    C->>API: Refresh request + cookie
+    API->>DB: Verify persisted refresh token
+    DB-->>API: Valid session
+    API-->>C: New access token
+```
+
+### Session design
+
+**Access token**
+
+- short-lived;
+- returned to the client;
+- sent through the `Authorization: Bearer ...` header;
+- contains authenticated identity and role names.
+
+**Refresh token**
+
+- stored in an `HttpOnly` cookie;
+- persisted server-side;
+- used to issue a new access token;
+- invalidated on logout.
+
+This keeps long-lived session material out of JavaScript-accessible browser storage.
+
+---
+
+# Authorization & RBAC
+
+Authentication and authorization are separate concerns.
+
+```text
+Request
+  ↓
+verifyJWT
+  ↓
+Authenticated identity + roles
+  ↓
+verifyRoles(...allowedRoles)
+  ↓
+Protected operation
+```
+
+Current business roles:
+
+```js
+const ROLES_LIST = {
+  Admin: 5150,
+  Editor: 1984,
+  User: 2001,
+};
+```
+
+Typical permissions:
+
+| Capability                  |  User   | Editor | Admin |
+| --------------------------- | :-----: | :----: | :---: |
+| Vote                        |   ✅    |   ✅   |  ✅   |
+| View active/open polls      |   ✅    |   ✅   |  ✅   |
+| Manage polls                |   ❌    |   ✅   |  ✅   |
+| Manage poll options         |   ❌    |   ✅   |  ✅   |
+| Manage users / roles        |   ❌    |   ❌   |  ✅   |
+| Notification administration | Limited |   ✅   |  ✅   |
+
+The frontend uses permissions for UI behavior, but **backend RBAC remains authoritative**.
+
+---
+
+# Req validation
+
+The API validates incoming requests with **Joi** before controllers execute.
+
+```text
+HTTP Request
+   ↓
+Joi schema
+   ├── invalid → 400
+   └── valid
+         ↓
+      Controller
+         ↓
+       Service
+```
+
+Validation covers authentication, polls, poll options, voting, notification operations, and query parameters.
+
+The design intentionally separates:
+
+> **Request validation** — “Is this payload structurally acceptable?”
+>
+> **Business validation** — “Is this operation allowed in the current domain state?”
+
+---
+
+# Voting integrity
+
+The core business invariant is:
+
+> **One member can vote only once per poll.**
+
+The application checks for an existing vote, while MongoDB also protects the invariant with a unique compound index.
+
+```js
+voteSchema.index({ pollId: 1, userId: 1 }, { unique: true });
+```
+
+This creates two defensive layers:
+
+```text
+Application rule
+      +
+Database constraint
+      ↓
+One vote / user / poll
+```
+
+That matters under race conditions because application-level checks alone cannot guarantee uniqueness.
+
+---
+
+# Poll lifecycle
+
+Polls use explicit states instead of a boolean `isActive` field.
+
+```mermaid
+stateDiagram-v2
+    [*] --> DRAFT
+    DRAFT --> SCHEDULED: publish
+    DRAFT --> CANCELLED: cancel
+    SCHEDULED --> OPEN: startsAt
+    SCHEDULED --> CANCELLED: cancel
+    OPEN --> CLOSED: endsAt
+    OPEN --> CANCELLED: cancel
+```
+
+Key domain rules include:
+
+- draft/scheduled polls can be edited where allowed;
+- open polls are protected from structural changes;
+- closed polls are immutable;
+- voting is accepted only while the poll is open and valid;
+- publishing requires the configured number of options;
+- cancellation preserves historical records.
+
+Background lifecycle jobs move time-dependent polls forward without depending on a user request happening at exactly the right moment.
+
+---
+
+# Results and MongoDB aggregation
+
+Results are calculated near the data instead of loading all votes into application memory.
+
+```text
+Poll
+ ↓
+Poll options
+ ↓
+$lookup / aggregation
+ ↓
+Vote counts
+ ↓
+Result projection
+ ↓
+Sorting
+ ↓
+Percentages / winner / tie detection
+```
+
+The result model preserves zero-vote options and treats ties explicitly rather than silently selecting an arbitrary winner.
+
+---
+
+# MongoDB performance engineering
+
+MongoDB is treated as a data platform rather than a simple persistence layer.
+
+The project uses and evaluates:
+
+- unique indexes;
+- compound indexes;
+- query-driven index design;
+- `lean()` where appropriate;
+- aggregation pipelines;
+- `.explain("executionStats")`;
+- `COLLSCAN` vs `IXSCAN` analysis;
+- `nReturned`;
+- `totalKeysExamined`;
+- `totalDocsExamined`;
+- `executionTimeMillis`;
+- notification worker indexes.
+
+The engineering principle is:
+
+> **Indexes are created from query patterns and verified with measurements.**
+
+That is more useful for long-term performance than adding indexes indiscriminately.
+
+---
+
+# Notification subsystem
+
+Notification delivery is deliberately separated from poll controllers.
+
+```mermaid
+flowchart LR
+    A[Poll closes] --> B[Create notification]
+    B --> C[PENDING]
+    C --> D[Worker claims notification]
+    D --> E[PROCESSING]
+    E --> F{Provider result}
+    F -->|Success| G[SENT]
+    F -->|Failure| H[FAILED]
+    H --> I[Backoff + nextAttemptAt]
+    I --> D
+    H --> J[Recovery for stuck processing]
+```
+
+### Reliability mechanisms
+
+The notification subsystem includes:
+
+- atomic claiming;
+- retry attempts;
+- exponential backoff;
+- jitter;
+- `nextAttemptAt` scheduling;
+- `processingStartedAt` tracking;
+- maximum-attempt protection;
+- recovery of stuck processing records;
+- uniqueness constraints;
+- provider-level idempotency support.
+
+### Provider isolation
+
+```text
+Notification Service
+       ↓
+Provider abstraction
+       ↓
+Email Provider
+       ↓
+Resend
+```
+
+This keeps the domain independent from a particular email vendor and leaves room for future channels.
+
+---
+
+# Error handling and observability
+
+The backend uses centralized error handling rather than letting individual controllers define arbitrary production responses.
+
+```text
+Controller / Service
+       ↓
+    next(error)
+       ↓
+Central error handler
+    ├── safe API response
+    └── detailed internal log
+```
+
+Production clients receive controlled messages such as:
+
+```json
+{
+  "message": "Internal server error"
+}
+```
+
+while detailed stack traces remain in server-side logs.
+
+The backend also avoids logging sensitive data such as passwords, JWTs, refresh tokens, authorization headers, and database credentials.
+
+---
+
+# Security posture
+
+Security is implemented across multiple layers rather than treated as a single authentication feature.
+
+### Implemented
+
+- bcrypt password hashing;
+- short-lived access tokens;
+- refresh tokens in `HttpOnly` cookies;
+- server-side refresh-token invalidation;
+- role-based access control;
+- request validation with Joi;
+- ownership checks on sensitive operations;
+- database uniqueness constraints;
+- production CORS configuration;
+- environment-based secrets;
+- Helmet security headers;
+- compression;
+- `express-rate-limit`;
+- `x-powered-by` disabled;
+- centralized error handling;
+- controlled production error responses;
+- no sensitive authentication material in logs.
+
+### Rate limiting
+
+A global baseline limiter is configured around the API, with the option to apply stricter limits to sensitive endpoints such as authentication.
+
+```js
+const rateLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+```
+
+The production goal is to slow abusive traffic without turning normal member activity into a poor experience.
+
+---
+
+# Testing and verification
+
+The project includes a Jest/Supertest testing foundation and has been exercised through explicit integration/security scenarios.
+
+Covered areas include:
 
 ```text
 Authentication
-├── Register
-├── Login
-├── Refresh
-└── Logout
+├── register
+├── login
+├── protected requests
+├── refresh
+└── logout
 
 Authorization
-├── Admin access
-├── Editor access
-└── Member restrictions
+├── Admin
+├── Editor
+└── User restrictions
 
 Voting
-├── Valid vote
-├── Duplicate vote
-├── Invalid option
-├── Wrong poll option
-└── Expired poll
+├── valid vote
+├── duplicate vote
+├── invalid option
+├── wrong-poll option
+└── closed-poll rejection
 
 Poll lifecycle
-├── DRAFT → SCHEDULED
-├── SCHEDULED → OPEN
-├── OPEN → CLOSED
-└── Invalid transitions
+├── Draft
+├── Scheduled
+├── Open
+├── Closed
+└── Cancelled
 
 Notifications
-├── PENDING → PROCESSING → SENT
-├── Provider failure
-├── Retry
-├── Maximum attempts
-├── Atomic claim
-└── Stuck PROCESSING recovery
+├── delivery flow
+├── retry behavior
+├── atomic claim
+├── failure handling
+└── stuck-worker recovery
 ```
 
-Automated unit/integration testing is a planned next engineering phase; current manual verification is not presented as a substitute for a production test suite.
+Production smoke testing was also completed against the deployed application.
+
+> **Note:** the integration-test environment uses `mongodb-memory-server`; local execution depends on the MongoDB test binary being available to that package.
 
 ---
 
-# 🔒 Security Practices Implemented
+# Production deployment
 
-The platform intentionally practices multiple backend security concepts:
+UniMember is deployed as independent services:
 
-- Password hashing with bcrypt
-- Short-lived access tokens
-- Refresh-token authentication
-- HttpOnly cookies
-- Role-based authorization
-- Protected routes
-- Request validation with Joi
-- Server-side ownership checks
-- Database-level uniqueness constraints
-- CORS configuration
-- Environment-based secrets
-- Token invalidation on logout
-- Controlled response contracts
-- No client-supplied identity for sensitive ownership operations
+| Component      | Platform      |
+| -------------- | ------------- |
+| Frontend       | Vercel        |
+| Backend        | Render        |
+| Database       | MongoDB Atlas |
+| Email          | Resend        |
+| Source control | GitHub        |
 
-Further hardening is planned around rate limiting, security headers, CSRF considerations, NoSQL injection defense, auditing, and broader OWASP API review.
-
----
-
-# 🧠 Engineering Concepts Practiced
-
-## Node.js / Express
-
-- Async programming
-- Modules
-- Middleware
-- Routing
-- Controllers
-- Error middleware
-- Cookies
-- CORS
-- Background jobs
-
-## REST API Design
-
-- Resource-oriented endpoints
-- HTTP methods and status codes
-- Route parameters
-- Query parameters
-- Request bodies
-- Pagination
-- Filtering
-- Sorting
-- Response contracts
-
-## Authentication & Authorization
-
-- Password hashing
-- JWT
-- Access / refresh token model
-- HttpOnly cookies
-- RBAC
-- Ownership checks
-- Protected resources
-
-## MongoDB / Mongoose
-
-- Schemas and models
-- References
-- `populate()`
-- Aggregation pipelines
-- Unique indexes
-- Compound indexes
-- Query-driven indexes
-- `lean()`
-- `explain()`
-- `COLLSCAN` vs `IXSCAN`
-- Database constraints
-
-## Reliability Engineering
-
-- State machines
-- Background workers
-- Atomic claims
-- Race-condition prevention
-- Retry policies
-- Exponential backoff
-- Jitter
-- Idempotency
-- Failure states
-- Stuck-worker recovery
-
-## Architecture
-
-- Controllers vs services
-- Provider abstraction
-- DTO / mapper layer
-- Domain rules
-- Infrastructure isolation
-- Separation of concerns
-
----
-
-# 📈 Project Evolution
+### Deployment flow
 
 ```text
-┌───────────────────────────────┐
-│ Basic Employee REST API       │
-│ Express + JSON files          │
-└───────────────┬───────────────┘
-                │
-                ▼
-┌───────────────────────────────┐
-│ MongoDB + Mongoose             │
-│ Persistent data model          │
-└───────────────┬───────────────┘
-                │
-                ▼
-┌───────────────────────────────┐
-│ Authentication                │
-│ JWT + bcrypt + cookies        │
-└───────────────┬───────────────┘
-                │
-                ▼
-┌───────────────────────────────┐
-│ Authorization                 │
-│ RBAC + protected operations   │
-└───────────────┬───────────────┘
-                │
-                ▼
-┌───────────────────────────────┐
-│ Request Validation             │
-│ Joi + reusable middleware      │
-└───────────────┬───────────────┘
-                │
-                ▼
-┌───────────────────────────────┐
-│ Query Engineering             │
-│ Filtering + sorting + paging  │
-│ Indexes + explain()            │
-└───────────────┬───────────────┘
-                │
-                ▼
-┌───────────────────────────────┐
-│ CS Club Domain                │
-│ Polls + options + votes       │
-└───────────────┬───────────────┘
-                │
-                ▼
-┌───────────────────────────────┐
-│ Business State Machine        │
-│ Draft → Scheduled → Open      │
-│ → Closed / Cancelled          │
-└───────────────┬───────────────┘
-                │
-                ▼
-┌───────────────────────────────┐
-│ Results & Aggregation          │
-│ Counts + percentages + ties    │
-└───────────────┬───────────────┘
-                │
-                ▼
-┌───────────────────────────────┐
-│ Notification Subsystem         │
-│ Provider + retries + recovery  │
-└───────────────────────────────┘
+GitHub
+ ├── frontend → Vercel
+ └── backend  → Render
+                   ↓
+             MongoDB Atlas
+                   +
+                 Resend
+```
+
+### Production configuration
+
+The backend uses environment-based configuration for:
+
+- database URI;
+- JWT secrets;
+- token lifetimes;
+- frontend origin;
+- email provider credentials;
+- sender identity;
+- server port and environment.
+
+Secrets are not intended to be committed to Git.
+
+### Health check
+
+The backend exposes:
+
+```http
+GET /health
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok",
+  "service": "UniMember API"
+}
+```
+
+This gives the hosting platform a deterministic way to check application availability.
+
+---
+
+# 📦 Repository structure
+
+The repository is a monorepo with independent frontend and backend applications.
+
+```text
+UniMember/
+│
+├── backend/
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   │   └── provider/
+│   ├── Jobs/
+│   ├── validation/
+│   ├── utils/
+│   ├── tests/
+│   ├── script/
+│   ├── app.js
+│   ├── server.js
+│   ├── package.json
+│   └── package-lock.json
+│
+├── frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── app/
+│   │   ├── components/
+│   │   ├── features/
+│   │   ├── hooks/
+│   │   ├── styles/
+│   │   └── main.jsx
+│   ├── public/
+│   ├── index.html
+│   ├── vite.config.js
+│   ├── package.json
+│   └── package-lock.json
+│
+└── README.md
 ```
 
 ---
 
-# 🧭 Development Model
+# Getting started locally
 
-The application has been developed as an engineering exercise using small, explicit tickets rather than one large rewrite.
+## Prerequisites
 
-Each feature follows:
+- Node.js 24 LTS for the backend;
+- a MongoDB database for local development;
+- a Resend account for email functionality when needed.
 
-```text
-Ticket
-  ↓
-Goal
-  ↓
-Acceptance Criteria
-  ↓
-Implementation
-  ↓
-Manual / API Verification
-  ↓
-Refactor
-  ↓
-Commit
-```
-
-This project intentionally separates:
-
-```text
-Feature complete
-      ≠
-Production hardened
-```
-
-The current backend is **production-oriented**, while automated testing, security hardening, containerization, CI/CD, deployment, observability, and scaling infrastructure remain planned engineering phases.
-
----
-
-# 🚀 Getting Started
-
-## 1. Clone the repository
+## Backend
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
-cd <YOUR_PROJECT_DIRECTORY>
-```
-
-## 2. Install dependencies
-
-```bash
+cd backend
 npm install
 ```
 
-## 3. Configure environment variables
+Create `.env` from the provided example and configure the development values.
 
-Create `.env` from `.env.example`.
-
-Example:
-
-```env
-PORT=3500
-
-MONGO_URI=your_mongodb_connection_string
-
-ACCESS_TOKEN_SECRET=your_access_token_secret
-REFRESH_TOKEN_SECRET=your_refresh_token_secret
-
-RESEND_API_KEY=your_resend_api_key
-EMAIL_FROM=your_verified_sender
-```
-
-⚠️ Never commit `.env` to Git.
-
-## 4. Start development server
+Start development:
 
 ```bash
 npm run dev
 ```
 
----
+Start production mode locally:
 
-# 🤝 Engineering Philosophy
+```bash
+npm start
+```
 
-The central idea behind the project is simple:
+## Frontend
 
-> **A backend is not a collection of endpoints. It is a system of rules, boundaries, data, and failure-handling mechanisms.**
+```bash
+cd frontend
+npm install
+```
 
-The project therefore focuses on understanding why features exist:
+Configure:
 
-```text
-Authentication
-      ↓
-Who is calling?
+```env
+VITE_API_URL=http://localhost:3500/api/v1
+```
 
-Authorization
-      ↓
-What are they allowed to do?
+Start development:
 
-Validation
-      ↓
-Is the request acceptable?
+```bash
+npm run dev
+```
 
-Domain rules
-      ↓
-Is the operation valid now?
+Build for production:
 
-Database constraints
-      ↓
-Can the rule survive races and bugs?
+```bash
+npm run build
+```
 
-Indexes
-      ↓
-Can the query scale?
+Preview the production bundle:
 
-Background processing
-      ↓
-Can work happen reliably outside HTTP?
-
-Retries / idempotency
-      ↓
-What happens when infrastructure fails?
+```bash
+npm run preview
 ```
 
 ---
 
-<p align="center">
+# API overview
 
-### Built with Node.js • Express • MongoDB • Mongoose • JWT • Joi • Resend
+Base path:
 
-</p>
+```text
+/api/v1
+```
+
+### Authentication
+
+| Method | Endpoint         | Purpose              |
+| ------ | ---------------- | -------------------- |
+| `POST` | `/auth/register` | Register member      |
+| `POST` | `/auth/login`    | Authenticate member  |
+| `POST` | `/auth/refresh`  | Refresh access token |
+| `POST` | `/auth/logout`   | Invalidate session   |
+
+### Polls and voting
+
+| Method  | Endpoint                 | Purpose             |
+| ------- | ------------------------ | ------------------- |
+| `GET`   | `/polls/active`          | Current open poll   |
+| `GET`   | `/polls/open`            | Open polls          |
+| `GET`   | `/polls/:pollId`         | Poll details        |
+| `POST`  | `/polls`                 | Create poll         |
+| `PATCH` | `/polls/:pollId`         | Update poll         |
+| `POST`  | `/polls/:pollId/options` | Add option          |
+| `POST`  | `/polls/:pollId/votes`   | Cast vote           |
+| `GET`   | `/polls/:pollId/my-vote` | Current user's vote |
+| `GET`   | `/polls/history`         | Voting history      |
+| `GET`   | `/polls/:pollId/results` | Poll results        |
+| `POST`  | `/polls/:pollId/publish` | Publish poll        |
+| `POST`  | `/polls/:pollId/close`   | Close poll          |
+| `POST`  | `/polls/:pollId/cancel`  | Cancel poll         |
+
+### Administration
+
+| Method  | Endpoint                 | Purpose                 |
+| ------- | ------------------------ | ----------------------- |
+| `GET`   | `/users`                 | List users              |
+| `PATCH` | `/users/:id/roles`       | Update roles            |
+| `GET`   | `/notifications`         | Notification operations |
+| `GET`   | `/notifications/history` | Notification history    |
+| `GET`   | `/notifications/summary` | Notification summary    |
+
+> Endpoint permissions are enforced by backend authentication and RBAC middleware. The frontend permission layer is not a security boundary.
+
+---
+
+# Engineering highlights
+
+This project demonstrates more than framework knowledge.
+
+### Domain modeling
+
+Polls behave like a lifecycle-driven domain object rather than a CRUD document with an `isActive` flag.
+
+### Defense in depth
+
+Important invariants are protected by multiple layers:
+
+```text
+Validation
+  +
+Business rules
+  +
+Authorization
+  +
+Database constraints
+```
+
+### Reliability thinking
+
+Notification delivery treats external infrastructure as unreliable by default and accounts for failures through retries, backoff, idempotency, and recovery.
+
+### Query-aware database design
+
+Indexes are evaluated from real access patterns and measured with MongoDB execution statistics.
+
+### Infrastructure isolation
+
+Third-party email delivery is hidden behind a provider boundary, reducing coupling to Resend.
+
+### Production mindset
+
+The application is not just runnable locally. It has:
+
+- explicit production configuration;
+- production hosting;
+- health checks;
+- secure cookies;
+- CORS controls;
+- security middleware;
+- centralized error handling;
+- rate limiting;
+- background jobs;
+- deployment separation between frontend and backend.
+
+---
+
+# Scalability considerations
+
+The current architecture is intentionally suitable for a small-to-medium university/community workload while leaving clear paths for growth.
+
+### Current scaling model
+
+```text
+Vercel frontend
+      ↓
+Single Render API instance
+      ↓
+MongoDB Atlas
+```
+
+The backend initially runs lifecycle and notification jobs in the same process. That is appropriate for the first deployment but should not be multiplied blindly across many API instances.
+
+### Next scaling step
+
+As traffic grows, the background jobs should move into a dedicated worker process/service:
+
+```text
+                ┌── API instances ────────┐
+                │                         │
+Load Balancer ──┤                         ├── MongoDB Atlas
+                │                         │
+                └─────────────────────────┘
+                           │
+                           ▼
+                    Background Worker
+                           │
+                           └── Resend
+```
+
+This separates synchronous HTTP traffic from asynchronous work and prevents multiple API replicas from independently executing the same scheduled jobs.
+
+### Future evolution
+
+Potential next steps include:
+
+- dedicated worker infrastructure;
+- centralized structured logging;
+- metrics and alerting;
+- CI/CD quality gates;
+- broader automated integration coverage;
+- distributed tracing where justified;
+- stronger database network isolation/private connectivity;
+- auditing for sensitive administrative actions;
+- CSRF hardening based on the final browser architecture;
+- horizontal API scaling.
+
+These are deliberate evolution paths, not mandatory complexity for the current product size.
+
+---
+
+# Engineering workflow
+
+Development followed explicit acceptance-driven tickets:
+
+```text
+Requirement
+   ↓
+Acceptance criteria
+   ↓
+Implementation
+   ↓
+Manual / API verification
+   ↓
+Hardening / refactor
+   ↓
+Commit
+   ↓
+Deployment
+   ↓
+Production smoke test
+```
+
+That workflow helped the project evolve from a learning exercise into a deployable product without losing architectural clarity.
+
+---
+
+# Roadmap
+
+### Completed
+
+- Authentication and secure sessions
+- Role-based authorization
+- User and role management
+- Poll management
+- Poll lifecycle automation
+- One-vote-per-member enforcement
+- Results and winner/tie handling
+- Voting history
+- Notification delivery architecture
+- Notification retries and recovery
+- Request validation
+- Production error handling
+- Helmet / compression / rate limiting
+- MongoDB performance work
+- Integration/security test foundation
+- Production deployment
+- Production smoke test
+
+### Deferred / future
+
+- Avatar upload
+- Dedicated background worker deployment
+- Expanded observability and metrics
+- CI/CD quality gates
+- Additional notification providers/channels
+- Larger-scale infrastructure and horizontal scaling
+
+---
