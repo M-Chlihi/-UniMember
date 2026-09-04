@@ -13,7 +13,7 @@ export default function Navbar() {
           <div className="lg:hidden">
             <MobileNavigation />
           </div>
-          <BrandLogo />
+          <BrandLogo size="md" />
         </div>
 
         <div className="flex items-center gap-2">

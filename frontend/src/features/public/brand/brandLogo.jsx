@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import logoMark from "./unimember-mark.svg";
 
 const sizeClasses = {
   sm: {
@@ -31,9 +32,9 @@ export default function BrandLogo({
       aria-label="UniMember home"
     >
       <img
-        src="./unimember-mark.svg"
-        alt=""
-        className={`${styles.icon} w-auto shrink-0`}
+        src={logoMark}
+        alt="member logo"
+        className={`  w-auto ${styles.icon} shadow-sm rounded-full ring-1 ring-border`}
       />
 
       {showName && (
