@@ -89,21 +89,21 @@ export default function PublicNavbar() {
           >
             <a
               href="#platform"
-              className="text-sm text-text-secondary transition-colors hover:text-text-primary"
+              className="text-sm text-text-secondary transition-colors hover:text-buthover"
             >
               Platform
             </a>
 
             <a
               href="#how-it-works"
-              className="text-sm text-text-secondary transition-colors hover:text-text-primary"
+              className="text-sm text-text-secondary transition-colors hover:text-buthover"
             >
               How it works
             </a>
 
             <a
               href="#why-cs-club"
-              className="text-sm text-text-secondary transition-colors hover:text-text-primary"
+              className="text-sm text-text-secondary transition-colors hover:text-buthover"
             >
               Why UniMember
             </a>
@@ -145,7 +145,7 @@ export default function PublicNavbar() {
               <>
                 <Link
                   to="/login"
-                  className="rounded-full px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-buthover"
                 >
                   Sign in
                 </Link>

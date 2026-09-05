@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import BrandLogo from "../../public/brand/brandLogo";
 
 import { useAuth } from "../hooks/useAuth";
 import LoginForm from "../componenets/loginForm";
@@ -82,9 +83,12 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+    <main className="flex min-h-screen items-center justify-center px-4 py-10 bg-gradient-to-b from-[#7209b7] from-0% via-white/95 to-white to-100%">
       <section className="w-full max-w-md">
         <div className="rounded-xl  border-border bg-surface p-6   sm:p-8">
+          <div className="mb-6 items-center justify-center">
+            <BrandLogo size="lg" />
+          </div>
           <div className="mb-8">
             <p className="text-sm font-medium text-primary"> Sign in</p>
 

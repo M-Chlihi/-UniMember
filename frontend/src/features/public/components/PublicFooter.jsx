@@ -15,22 +15,19 @@ export default function PublicFooter() {
         </div>
 
         <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-mist-950">
-          <a href="#platform" className="transition hover:text-text-primary">
+          <a href="#platform" className="transition hover:text-buthover">
             Platform
           </a>
 
-          <a
-            href="#how-it-works"
-            className="transition hover:text-text-primary"
-          >
+          <a href="#how-it-works" className="transition hover:text-buthover">
             How it works
           </a>
 
-          <Link to="/login" className="transition hover:text-text-primary">
+          <Link to="/login" className="transition hover:text-buthover">
             Sign in
           </Link>
 
-          <Link to="/register" className="transition hover:text-text-primary">
+          <Link to="/register" className="transition hover:text-buthover">
             Join
           </Link>
         </div>
