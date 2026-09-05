@@ -1,13 +1,14 @@
 import PropTypes from "prop-types";
 const variants = {
   primary:
-    " bg-text-primary text-text-inverse hover:bg-primary-hover focus-visible:ring-primary",
+    " bg-but text-text-inverse hover:bg-buthover focus-visible:ring-primary",
   secondary:
     "bg-surface border border-border text-text-primary hover:bg-slate-50 focus-visible:ring-primary",
   danger:
     "bg-danger text-text-inverse hover:bg-red-700 focus-visible:ring-danger",
   ghost:
-    "bg-transparent text-text-secondary hover:bg-slate-100 focus-visible:ring-primary",
+    "bg-transparent text-text-secondary underline hover:bg-slate-100 focus-visible:ring-primary",
+  hist: "bg-history text-text-inverse  hover:bg-history-80 focus-visible:ring-primary",
 };
 
 const sizes = {

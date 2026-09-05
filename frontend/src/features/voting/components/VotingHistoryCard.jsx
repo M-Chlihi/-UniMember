@@ -60,7 +60,7 @@ export default function VotingHistoryCard({ item }) {
       <div>
         {poll.status === "CLOSED" && (
           <Button
-            variant="danger"
+            variant="hist"
             size="sm"
             onClick={() => navigate(`/member/poll/${poll.id}/results`)}
           >

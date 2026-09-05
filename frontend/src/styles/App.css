@@ -5,10 +5,14 @@
   --color-primary: #2563eb;
   --color-primary-hover: #1d4ed8;
   --color-primary-active: #1e40af;
+  --color-but: #7915bb;
+  --color-buthover: #7209b7;
+  --color-navbar: #840ad634;
 
   /* Surfaces */
   --color-background: #f8fafc;
   --color-surface: #ffffff;
+  --color-surface2: #e2eaf583;
   --color-surface-elevated: #ffffff;
 
   /* Text */
@@ -26,6 +30,7 @@
   --color-warning: #d97706;
   --color-danger: #dc2626;
   --color-info: #0284c7;
+  --color-history: #7209b7;
 
   /* Typography */
   --font-sans: "Playfair Display", sans-serif;

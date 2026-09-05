@@ -7,7 +7,7 @@ import BrandLogo from "../../features/public/brand/brandLogo";
 
 export default function Navbar() {
   return (
-    <header className=" shadow-[0_18px_100px_rgba(15,23,42,0.12)] sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-xl">
+    <header className=" shadow-[0_18px_100px_rgba(15,23,42,0.12)] sticky top-0 z-40 border-b border-border/80 backdrop-blur-xl bg-gradient-to-b from-[#7209b7] from-0% via-white/95 to-white to-100%">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <div className="lg:hidden">

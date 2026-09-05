@@ -32,7 +32,6 @@ export default function MemberDashboardPage() {
           message="There isn't a course vote open right now."
         />
       )}
-
       <RecentActivity />
     </div>
   );
